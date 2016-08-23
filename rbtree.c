@@ -141,6 +141,20 @@ static void rb_rotate_left(struct rb_node *x, struct rb_tree *tree)
 		p->left = y;
 }
 
+/*
+ * Find *key in *tree.
+ *
+ * The two parameters of compare() are *key and a <struct rb_node>,
+ * *key could be everything, so it is decided by the user that
+ * how to compare *key with <struct rb_node>.
+ *
+ * - **result being null means key is not in tree, deltap is nonesense.
+ * - **result not being null:
+ * 	- key is found if *deltap is zero
+ *	- key is not found and should be a child of **result
+ *		- left child if *deltap < 0
+ *		- right child if *deltap > 0
+ */ 
 void rb_general_find(const void *key, const struct rb_tree *tree, 
 	int (*compare)(const void *, const void *),
 	struct rb_node **result, int *deltap)
