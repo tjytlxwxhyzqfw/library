@@ -17,6 +17,13 @@ struct heap {
 
 	/* 比较函数,用于比较队列元素的大小 */
 	int (*cmp)(const void *, const void *);
+
+	#ifdef DIJKSTRA
+	/* 设置一个元素在cell中的下标 */
+	void (*set)(void *, const int);
+	/* 交换两个元素在cell中的下标 */
+	void (*swap)(void *, void *);
+	#endif
 };
 
 /**
@@ -26,7 +33,11 @@ struct heap {
  * @param cmp - 优先队列中元素的比较方法
  * @return - 指向优先队列结构的指针
  */
-struct heap *heap_new(int cap, int (*cmp)(const void *, const void*))
+struct heap *heap_new(int cap, int (*cmp)(const void *, const void*)
+	#ifdef DIJKSTRA
+	,void (*set)(void *, const int), void (*swap)(void *, void *)
+	#endif
+)
 {
         struct heap *h;
 
@@ -38,6 +49,11 @@ struct heap *heap_new(int cap, int (*cmp)(const void *, const void*))
         assert(h->cell = malloc(sizeof(void*) * cap));
 	/* comparison function */
 	h->cmp = cmp;
+
+	#ifdef DIJKSTRA
+	h->set = set;
+	h->swap = swap;
+	#endif
 
         return h;
 }
@@ -81,6 +97,9 @@ void heap_pdown(int x, struct heap *h)
                 tmp = h->cell[c];
                 h->cell[c] = h->cell[x];
                 h->cell[x] = tmp;
+		#ifdef DIJKSTRA
+		h->swap(h->cell[c], h->cell[x]);
+		#endif
 
                 x = c;
         }
@@ -104,6 +123,9 @@ void heap_pup(int x, struct heap *h)
                 tmp = h->cell[x];
                 h->cell[x] = h->cell[p];
                 h->cell[p] = tmp;
+		#ifdef DIJKSTRA
+		h->swap(h->cell[x], h->cell[p]);
+		#endif
 
                 x = p;
         }
@@ -122,6 +144,9 @@ int heap_insert(void *e, struct heap *h)
                 return -1;
 
         h->cell[++h->last] = e;
+	#ifdef DIJKSTRA
+	h->set(h->cell[h->last], h->last);
+	#endif
         heap_pup(h->last, h);
 
         return 0;
@@ -142,6 +167,9 @@ void *heap_del(struct heap *h)
 
         ret = h->cell[1];
         h->cell[1] = h->cell[h->last--];
+	#ifdef DIJKSTRA
+	h->set(h->cell[1], 1);
+	#endif
         heap_pdown(1, h);
         return ret;
 }
