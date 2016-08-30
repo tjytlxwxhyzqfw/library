@@ -12,12 +12,24 @@
  * 	p中必须存储纯数,而非ascii字符
  * 	比如,如果字母表是{a,b,c,d,e},p="abc",则p中必须存储"0,1,2"
  * 因为基数取128,所以可以作用于所有ascii字符;
+ *
+ * 坏的序列:
+ * t: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ * p: aaaa
  */
 
 #include <string.h>
 
 #define RK_MAGIC 0xfffffdUL
 #define RK_RADIX 128
+
+struct rabin_karp_param {
+	char *txt, *pat;
+	int txtlen, patlen;
+	int txtval, patval;
+	int power;
+	void *private;
+};
 
 /* (radix * (pre - left * power) + right) % magic */
 #define rabin_karp_next(pre, left, right, power) \
@@ -46,67 +58,17 @@ int rabin_karp_value(const char *p, const int m)
 	return result;
 }
 
-void rabin_karp_query_init(const char *p, const char *t, 
-	int *lenp, int *pval, int *tval, int *power)
-{
-	*lenp = strlen(p);
-	*pval = rabin_karp_value(p, *lenp);
-	*tval = rabin_karp_value(t, *lenp);
-	*power = rabin_karp_power(*lenp);
-}
-
-void rabin_karp_simple(const char *t, const char *p, const int lent,
-	void (*onmatch)(const char *, const int, const int, void *),
-	void *rkres)
+void rabin_karp_simple(struct rabin_karp_param *param,
+	int (*onmatch)(const int, struct rabin_karp_param *))
 {
 	int ilast, i;
-	int lenp, pval, tval, power;
+	int tval;
 
-	rabin_karp_query_init(p, t, &lenp, &pval, &tval, &power);
-
-	ilast = lent - lenp;
+	tval = param->txtval;
+	ilast = param->txtlen - param->patlen;
 	for (i = 0; i <= ilast; ++i) {
-		if (tval == pval)
-			onmatch(t, i, i + lenp, rkres);
-		tval = rabin_karp_next(tval, t[i], t[i + lenp], power);
+		if (tval == param->patval && onmatch(i, param))
+			break;
+		tval = rabin_karp_next(tval, param->txt[i], param->txt[i + param->patlen], param->power);
 	}
-}
-
-#include "debug.c"
-
-struct rkres {
-	int nmatches;
-};
-
-void onmatch(const char *t, const int start, const int end, void *rkres)
-{
-	int i = 0;
-	printis(1, 0, "onmatch(): [%3d, %3d): ", start, end);
-	for (i = start; i < end; ++i)
-		putchar(t[i]);
-	printis(0, 0, "\n");
-
-	++((struct rkres *)rkres)->nmatches;
-}
-
-int main(void)
-{
-	char t[65535], p[65535];
-	int lent;
-	struct rkres rkres;
-
-	while (scanf("%s", t) == 1) {
-		lent = strlen(t);
-		while (scanf("%s", p) == 1) {
-			if (!strcmp(p, "end"))
-				break;
-			printis(0, 0, "t: %s\np: %s\n", t, p);
-
-			rkres.nmatches = 0;
-			rabin_karp_simple(t, p, lent, onmatch, &rkres);
-			printis(0, 0, "nmatches: %d\n", rkres.nmatches);
-		}
-	}
-
-	return 0;
 }

@@ -1,5 +1,5 @@
-#ifndef _TJYTLXWXHYZQFW_HEAP_H
-#define _TJYTLXWXHYZQFW_HEAP_H
+#ifndef _TJYTLXWXHYZQFW_HEAP_C
+#define _TJYTLXWXHYZQFW_HEAP_C
 
 #include <assert.h>
 #include <stdlib.h>
@@ -20,9 +20,7 @@ struct heap {
 
 	#ifdef DIJKSTRA
 	/* 设置一个元素在cell中的下标 */
-	void (*set)(void *, const int);
-	/* 交换两个元素在cell中的下标 */
-	void (*swap)(void *, void *);
+	void (*sethi)(void *, const int);
 	#endif
 };
 
@@ -35,7 +33,7 @@ struct heap {
  */
 struct heap *heap_new(int cap, int (*cmp)(const void *, const void*)
 	#ifdef DIJKSTRA
-	,void (*set)(void *, const int), void (*swap)(void *, void *)
+	, void (*set)(void *, int)
 	#endif
 )
 {
@@ -51,8 +49,7 @@ struct heap *heap_new(int cap, int (*cmp)(const void *, const void*)
 	h->cmp = cmp;
 
 	#ifdef DIJKSTRA
-	h->set = set;
-	h->swap = swap;
+	h->sethi = set;
 	#endif
 
         return h;
@@ -81,32 +78,36 @@ void heap_destroy(struct heap *h)
  *
  * <li>如果x的两棵子树是优先队列,那么下滤结束后,以x为根的树是优先队列</li>
  * <li>在最大堆中突然增大的元素或者在最小堆中突然变小的元素需要被下滤</li>
- *
- * 可优化
  */
-
 void heap_pdown(int x, struct heap *h)
 {
         int c, d;
-	void *fatty;
+        void *fatty;
 
-        while ((c = x * 2) <= h->last) {
+	/* x始终是个空格 */
+	fatty = h->cell[x];
+        while ((c = 2 * x) <= h->last) {
                 d = c + 1;
+		/* 两个儿子争取占用空格的机会 */
                 if (d <= h->last && h->cmp(h->cell[d], h->cell[c]) < 0)
                         c = d;
-                if (h->cmp(h->cell[x], h->cell[c]) < 0) {
+		/* 小儿子和胖子争取占用空格的机会 */
+                if (h->cmp(fatty, h->cell[c]) < 0) 
                         break;
-		}
 
-		h->cell[0] = h->cell[x];
+		/* 小儿子赢了 */
                 h->cell[x] = h->cell[c];
-		h->cell[c] = h->cell[0];
 		#ifdef DIJKSTRA
-		h->swap(h->cell[c], h->cell[x]);
+		h->sethi(h->cell[x], x);
 		#endif
 
                 x = c;
         }
+	/* 胖子赢了或者胖子没有竞争对手了(空格没儿子了) */
+	h->cell[x] = fatty;
+	#ifdef DIJKSTRA
+	h->sethi(fatty, x);
+	#endif
 }
 
 /**
@@ -118,21 +119,24 @@ void heap_pdown(int x, struct heap *h)
 void heap_pup(int x, struct heap *h)
 {
         int p;
-        void *tmp;
+        void *skinny;
 
+	skinny = h->cell[x];
         while ((p = x / 2) >= 1) {
-                if (h->cmp(h->cell[p], h->cell[x]) < 0)
+                if (h->cmp(skinny, h->cell[p]) > 0)
                         break;
 
-                tmp = h->cell[x];
                 h->cell[x] = h->cell[p];
-                h->cell[p] = tmp;
 		#ifdef DIJKSTRA
-		h->swap(h->cell[x], h->cell[p]);
+		h->sethi(h->cell[x], x);
 		#endif
 
                 x = p;
         }
+	h->cell[x] = skinny;
+	#ifdef DIJKSTRA
+	h->sethi(skinny, x);
+	#endif
 }
 
 /**
@@ -149,7 +153,7 @@ int heap_insert(void *e, struct heap *h)
 
         h->cell[++h->last] = e;
 	#ifdef DIJKSTRA
-	h->set(h->cell[h->last], h->last);
+	h->sethi(h->cell[h->last], h->last);
 	#endif
         heap_pup(h->last, h);
 
@@ -172,7 +176,7 @@ void *heap_del(struct heap *h)
         ret = h->cell[1];
         h->cell[1] = h->cell[h->last--];
 	#ifdef DIJKSTRA
-	h->set(h->cell[1], 1);
+	h->sethi(h->cell[1], 1);
 	#endif
         heap_pdown(1, h);
         return ret;
