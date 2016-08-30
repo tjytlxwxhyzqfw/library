@@ -19,8 +19,9 @@
 #define RK_MAGIC 0xfffffdUL
 #define RK_RADIX 128
 
-#define rabin_karp_next(ti, left, right, power) \
-	((RK_RADIX * ((ti) - (left) * (power)) + right) % RK_MAGIC)
+/* (radix * (pre - left * power) + right) % magic */
+#define rabin_karp_next(pre, left, right, power) \
+	((RK_RADIX * (((pre) + RK_MAGIC - ((left) * (power)) % RK_MAGIC) % RK_MAGIC) + (right)) % RK_MAGIC)
 
 int rabin_karp_power(int m)
 {
