@@ -5,6 +5,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void clock_stat(int cmd, char *tag, clock_t *total)
+{
+        static clock_t clocks;
+        if (cmd == 0) {
+                clocks = clock();
+        } else {
+                clocks = clock() - clocks;
+		if (total)
+			*total += clocks;
+        }
+
+        if (tag)
+                printf("%s: delta: %lld, total: %lld\n", tag, clocks, total);
+}
+
+
+clock_t pup_total = 0, insert_total = 0, del_total = 0;
+
+
 static void indent(int ind)
 {
 	while (ind--)

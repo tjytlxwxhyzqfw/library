@@ -81,22 +81,26 @@ void heap_destroy(struct heap *h)
  *
  * <li>如果x的两棵子树是优先队列,那么下滤结束后,以x为根的树是优先队列</li>
  * <li>在最大堆中突然增大的元素或者在最小堆中突然变小的元素需要被下滤</li>
+ *
+ * 可优化
  */
+
 void heap_pdown(int x, struct heap *h)
 {
         int c, d;
-        void *tmp;
+	void *fatty;
 
-        while ((c = 2 * x) <= h->last) {
+        while ((c = x * 2) <= h->last) {
                 d = c + 1;
                 if (d <= h->last && h->cmp(h->cell[d], h->cell[c]) < 0)
                         c = d;
-                if (h->cmp(h->cell[x], h->cell[c]) < 0)
+                if (h->cmp(h->cell[x], h->cell[c]) < 0) {
                         break;
+		}
 
-                tmp = h->cell[c];
-                h->cell[c] = h->cell[x];
-                h->cell[x] = tmp;
+		h->cell[0] = h->cell[x];
+                h->cell[x] = h->cell[c];
+		h->cell[c] = h->cell[0];
 		#ifdef DIJKSTRA
 		h->swap(h->cell[c], h->cell[x]);
 		#endif
