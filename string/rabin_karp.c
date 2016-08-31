@@ -39,9 +39,8 @@ int rabin_karp_power(int m)
 {
 	int power = 1;
 
-	while (--m) {
+	while (--m)
 		power = (power * RK_RADIX) % RK_MAGIC;
-	}
 
 	return power;
 }
