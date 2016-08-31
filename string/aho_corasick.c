@@ -6,37 +6,8 @@
  * 	trie.c
  */
 
-#include "arrayqueue.c" //TODO: use listqueue
-#include "debug.c"
+#include "../arrayqueue.c" //TODO: use listqueue
 #include "trie.c"
-
-void do_print_path(const struct trie_node *x)
-{
-	if (x->parent == x || x->parent == NULL)
-		return;
-	do_print_path(x->parent);
-	putchar(x->key);
-}
-
-void print_path(const struct trie_node *x, const char next)
-{
-	do_print_path(x);
-	putchar(next);
-}
-
-void print_trie(int deepth, const struct trie_node *x)
-{
-	int i;
-
-	printis(deepth, 0, "");
-	print_path(x, 0);
-	printf(" -> ");
-	print_path(x->failed, '\n');
-
-	for (i = 0; i < TRIE_ASZ; ++i)
-		if (x->nexts[i])
-			print_trie(deepth + 1, x->nexts[i]);
-}
 
 /*
  * Fill a trie with failed pointers.
@@ -96,6 +67,14 @@ void aho_corasick_fill(struct trie_node *trie)
 
 		node->failed = (parent != trie ? another->nexts[TRIE_IDX(node->key)] : trie);
 
+		if (node->end)
+			queue_append(node, node->queue);
+		if (node->failed != trie)
+			for (i = node->failed->queue->first;
+				i != node->failed->queue->last;
+				i = (i + 1) % node->failed->queue->cap)
+				queue_append(node->failed->queue->cell[i], node->queue);
+
 		for (i = 0; i < TRIE_ASZ; ++i)
 			if (node->nexts[i])
 				queue_append(node->nexts[i], q);
@@ -104,7 +83,8 @@ void aho_corasick_fill(struct trie_node *trie)
 	queue_destroy(q);
 }
 
-void aho_corasick_simple(const char *s, const struct trie_node *trie)
+void aho_corasick_simple(const char *s, const struct trie_node *trie,
+	int (*onmatch)(const struct trie_node *))
 {
 	const struct trie_node *node = trie;
 	int i, len;
@@ -112,84 +92,13 @@ void aho_corasick_simple(const char *s, const struct trie_node *trie)
 
 	len = strlen(s);
 	for (i = 0; i < len; ++i) {
-		printis(2, 0, "node: ");
-		print_path(node, 0);
-		printis(0, 0, ", ch: %c\n", s[i]);
 		chid = TRIE_IDX(s[i]);
-
-		try_accept:
-		//printis(3, 0, "try_accept: ");
-		//print_path(node, '\n');
+		while (node->nexts[chid] == NULL && node != trie)
+			node = node->failed;
 		if (node->nexts[chid]) {
 			node = node->nexts[chid];
-			if (node->end) {
-				printis(3, 0, "match: ");
-				print_path(node, '\n');
-			}
-			continue;
-		}
-
-		on_failed:
-		//printis(3, 0, "on_failed: ");
-		//print_path(node, '\n');
-		if (node != trie) {
-			node = node->failed;
-			if (node->end) {
-				printis(3, 0, "match: ");
-				print_path(node, '\n');
-			}
-			goto try_accept;
+			if (node->queue->first != node->queue->last && onmatch(node))
+				return;
 		}
 	}
-}
-
-char *string_new(const char *s)
-{
-	char *str;
-
-	str = malloc(sizeof(s));
-	strcpy(str, s);
-
-	return str;
-}
-
-int main(void)
-{
-	struct trie_node *trie;
-	char buf[100], *str;
-	int cmd;
-
-	freopen("tmp", "r", stdin);
-	setbuf(stdout, NULL);
-
-	trie = trie_node_new('r');
-
-	while (scanf("%d%s", &cmd, buf) == 2) {
-		str = string_new(buf);
-		switch (cmd) {
-			case 1:
-				printis(1, 0, "insert: %s\n", str);
-				trie_insert(str, trie);
-				break;
-			case 2:
-				printis(1, 0, "find: %s\n", str);
-				if (trie_find(str, trie))
-					printis(2, 0, "found: %s\n", str);
-				break;
-			case 3:
-				printis(1, 0, "remove: %s\n", str);
-				trie_remove(str, trie);
-				break;
-			default:
-				assert(0);
-		}
-	}
-
-	aho_corasick_fill(trie);
-	print_trie(0, trie);
-
-	while (scanf("%s", buf) == 1)
-		aho_corasick_simple(buf, trie);
-
-	return 0;
 }

@@ -1,0 +1,30 @@
+#! /bin/bash
+
+SRCPATH="/home/wcc/OnlineJudge/Source/"
+SCRIPTS_DIR="/home/wcc/OnlineJudge/Scripts/"
+
+function trysubmit_c {
+	if make
+	then
+		./a.out
+	fi
+}
+
+function config_c_makefile {
+	echo "a.out: ${pid}.c" > Makefile
+	echo "	gcc -I${SRCPATH} ${pid}.c" >> Makefile
+	echo "clean: " >> Makefile
+	echo "	rm a.out" >> Makefile
+}
+
+function config_c_alias {
+	alias vih="vi ${pid}.c"
+	alias vii="vi Inputs/${pid}"
+	alias th="trysubmit_c"
+	alias g0="${SCRIPTS_DIR}g00 ${pid}"
+}
+
+pid=${1-0000}
+echo "Source File: ${pid}.c"
+config_c_makefile
+config_c_alias

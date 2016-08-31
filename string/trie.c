@@ -14,6 +14,7 @@ struct trie_node {
 	struct trie_node *nexts[TRIE_ASZ];
 
 	struct trie_node *failed;
+	struct queue *queue;
 };
 
 struct trie_node *trie_node_new(char key)
@@ -27,6 +28,9 @@ struct trie_node *trie_node_new(char key)
 	node->end = 0;
 	node->parent = NULL;
 	memset(node->nexts, 0, TRIE_ASZ * sizeof(struct trie_node *));
+
+	node->failed = NULL;
+	node->queue = queue_new(1024);
 
 	return node;
 }
