@@ -3,8 +3,8 @@
 #include <string.h>
 
 //TODO: use listqueue
-#include "../source/arrayqueue.c"
-#include "../source/debug.c"
+#include "../list.c"
+#include "../debug.c"
 #include "trie.c"
 
 char *string_new(const char *s)

@@ -6,9 +6,6 @@
  * 	trie.c
  */
 
-#include "../arrayqueue.c" //TODO: use listqueue
-#include "trie.c"
-
 /*
  * Fill a trie with failed pointers.
  *
@@ -43,17 +40,17 @@ void aho_corasick_fill(struct trie_node *trie)
 {
 	struct trie_node *node = trie;
 
-	struct trie_node *hope, *parent, *another;
-	struct queue *q;
+	struct trie_node *parent, *another;
+	struct clist *queue;
+	struct clist_node *pos;
 	int i;
 
-	//TODO: use listqueue
-	q = queue_new(1000000);
-	
-	trie->parent = trie; /*important*/
-	queue_append(node, q);
+	queue = clist_alloc();
 
-	while ((node = queue_pop(q)) != NULL) {
+	trie->parent = trie; /*important*/
+	clist_append(trie, queue);
+
+	while ((node = clist_pop(queue)) != NULL) {
 		/*
 		 * We compute failed pointer for every node,
 		 * although some of them is never used.
@@ -68,19 +65,16 @@ void aho_corasick_fill(struct trie_node *trie)
 		node->failed = (parent != trie ? another->nexts[TRIE_IDX(node->key)] : trie);
 
 		if (node->end)
-			queue_append(node, node->queue);
+			clist_append(node, node->ends);
+
 		if (node->failed != trie)
-			for (i = node->failed->queue->first;
-				i != node->failed->queue->last;
-				i = (i + 1) % node->failed->queue->cap)
-				queue_append(node->failed->queue->cell[i], node->queue);
+			clist_for_each(pos, node->failed->ends)
+				clist_append(pos->data, node->ends);
 
 		for (i = 0; i < TRIE_ASZ; ++i)
 			if (node->nexts[i])
-				queue_append(node->nexts[i], q);
+				clist_append(node->nexts[i], queue);
 	}
-
-	queue_destroy(q);
 }
 
 void aho_corasick_simple(const char *s, const struct trie_node *trie,
@@ -97,7 +91,7 @@ void aho_corasick_simple(const char *s, const struct trie_node *trie,
 			node = node->failed;
 		if (node->nexts[chid]) {
 			node = node->nexts[chid];
-			if (node->queue->first != node->queue->last && onmatch(node))
+			if (!clist_empty(node->ends) && onmatch(node))
 				return;
 		}
 	}

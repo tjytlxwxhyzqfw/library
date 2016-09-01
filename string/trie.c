@@ -14,7 +14,7 @@ struct trie_node {
 	struct trie_node *nexts[TRIE_ASZ];
 
 	struct trie_node *failed;
-	struct queue *queue;
+	struct clist *ends;
 };
 
 struct trie_node *trie_node_new(char key)
@@ -30,7 +30,7 @@ struct trie_node *trie_node_new(char key)
 	memset(node->nexts, 0, TRIE_ASZ * sizeof(struct trie_node *));
 
 	node->failed = NULL;
-	node->queue = queue_new(1024);
+	node->ends = clist_alloc();
 
 	return node;
 }

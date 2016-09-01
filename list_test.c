@@ -11,16 +11,12 @@ struct node {
 
 struct node nodes[1024];
 
-void print_list(struct list *list)
+void print_list(struct list_node *head)
 {
 	struct list_node *node;
 
-	node = list->first;
-	//printis(0, 0, "first: %s\n", cont(node)->key);
-	do {
+	list_for_each(node, head)
 		printis(0, 0, "%s, ", cont(node)->key);
-		node = node->next;
-	} while (node != list->first);
 
 	printis(0, 0, "\n");
 }
@@ -28,17 +24,16 @@ void print_list(struct list *list)
 int main(void)
 {
 	int i = -1;
-	struct list *list;
+	struct list_node *head;
 	struct list_node *node;
 
-	list = list_new();
+	list_head_init(head);
 	while (scanf("%s", nodes[++i].key) == 1) {
-		list_node_circle(&nodes[i].ln);
-		list_push(&nodes[i].ln, list);
-		print_list(list);
+		list_push(&nodes[i].ln, head);
+		print_list(head);
 	}
 
-	while ((node = list_pop(list)) != NULL)
+	while ((node = list_pop(head)) != head)
 		printis(1, 1, "pop: %s\n", cont(node)->key);
 
 	return 0;

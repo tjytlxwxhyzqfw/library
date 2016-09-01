@@ -6,7 +6,12 @@
  * 	trie.c
  */
 
+#include <assert.h>
+
+#include "../clist.c"
 #include "../debug.c"
+#include "trie.c"
+
 #include "aho_corasick.c"
 
 void print_trie(int deepth, const struct trie_node *x);
@@ -55,7 +60,9 @@ int main(void)
 		}
 	}
 
+	printis(0, 0, "out of while\n");
 	aho_corasick_fill(trie);
+	printis(0, 0, "aho_corasick_fill(): ok\n");
 	print_trie(0, trie);
 
 	while (scanf("%s", buf) == 1)
@@ -80,13 +87,12 @@ void print_path(const struct trie_node *x, const char *next)
 
 void print_appends(const struct trie_node *x, const char *next)
 {
-	struct trie_node *node;
-	struct queue *q;
+	struct clist_node *cnode;
 	int i;
 
-	q = x->queue;
-	for (i = q->first; i != q->last; i = (i + 1) % q->cap)
-		print_path(q->cell[i], ", ");
+	clist_for_each(cnode, x->ends)
+		print_path(clist_data(cnode, struct trie_node *), ", ");
+
 	printf("%s", next);
 }
 

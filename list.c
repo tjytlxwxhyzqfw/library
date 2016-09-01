@@ -12,27 +12,21 @@ struct list_node {
 	struct list_node *next, *prev;
 };
 
-void list_node_circle(struct list_node *node)
-{
-	node->next = node->prev =node;
-}
-
 /*
  *    __ node___
- *   /  _____   \
- *  |  /      \ |
+ *   /  ______  \
+ *  |  /      \  |
  * prev        next
  *     \______/ 
  */
-void list_link(struct list_node *node, struct list_node *prev)
-{
-	node->next = prev->next;
-	node->prev = prev;
 
-	node->next->prev = node;
-	node->prev->next = node;
-}
-
+#define list_link(x, p) \
+	do {\
+		(x)->next = (p)->next;\
+		(x)->prev = (p);\
+		(x)->next->prev = (x);\
+		(x)->prev->next = (x);\
+	}while(0)
 
 /*
  *    ______  ______ 
@@ -54,56 +48,14 @@ struct list_node *list_unlink(struct list_node *node)
 	return node;
 }
 
-#ifndef LIST_NO_HEAD
+#define list_head_init(h) ((h)->next = (h)->prev = (h))
+#define list_empty(li) ((li)->next == (li) ? 1 : 0)
+#define list_append(x, li) list_link((x), (li)->prev)
+#define list_push(x, li) list_link((x), (li))
+#define list_pop(li) list_unlink((li)->next)
 
-struct list {
-	struct list_node *first;
-};
-
-struct list *list_new(void)
-{
-	struct list *list;
-
-	list = malloc(sizeof(struct list));
-	list->first = NULL;
-
-	return list;
-}
-
-void list_head_destroy(struct list *head)
-{
-	if (head)
-		free(head);
-}
-
-void list_append(struct list_node *node, struct list *list)
-{
-	if (list->first == NULL) {
-		list->first = node;
-		list_node_circle(node);
-		return;
-	}
-	list_link(node, list->first->prev);
-}
-
-void list_push(struct list_node *node, struct list *list)
-{
-	list_append(node, list);
-	list->first = node;
-}
-
-struct list_node *list_pop(struct list *list)
-{
-	struct list_node *target;
-
-	target = list->first;
-	if (target == NULL)
-		return NULL;
-	list->first = (target->next == target ? NULL : target->next);
-	return list_unlink(target);
-}
-
-#endif
+#define list_for_each(p, l) \
+	for((p) = (l)->next; (p) != (l); (p) = (p)->next)
 
 #endif
 
