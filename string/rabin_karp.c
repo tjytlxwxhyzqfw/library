@@ -18,6 +18,9 @@
  * p: aaaa
  */
 
+#ifndef _TJYTLXWXHYZQFW_RABIN_KARP_C
+#define _TJYTLXWXHYZQFW_RABIN_KARP_C
+
 #include <string.h>
 
 #define RK_MAGIC 0xfffffdUL
@@ -71,3 +74,5 @@ void rabin_karp_simple(struct rabin_karp_param *param,
 		tval = rabin_karp_next(tval, param->txt[i], param->txt[i + param->patlen], param->power);
 	}
 }
+
+#endif

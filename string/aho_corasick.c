@@ -2,7 +2,7 @@
  * Aho-Corasick Automathine
  *
  * need:
- * 	queue.c
+ * 	clist.c
  * 	trie.c
  */
 
@@ -31,10 +31,12 @@
  * (prove it).
  *
  * Here are some useful properties: 
- * 1. N is failed pointer always points to a node with key == N->key.
- * 2. If ch mismatches and return back to trie, then *trie must not have
+ * 1. Failed pointer of N always points to a node with key == N->key.
+ * 2. If ch in trie mismatches and return back to trie root, then *trie must not have
  * 	an arc to ch, because if there were, ch should have been returned
  * 	to the child of *trie;
+ * 3. Failed pointers link up all strings and sub-strings in trie that end up with
+ * 	a specific character.
  */
 void aho_corasick_fill(struct trie_node *trie)
 {
@@ -42,7 +44,6 @@ void aho_corasick_fill(struct trie_node *trie)
 
 	struct trie_node *parent, *another;
 	struct clist *queue;
-	struct clist_node *pos;
 	int i;
 
 	queue = clist_alloc();
@@ -55,21 +56,22 @@ void aho_corasick_fill(struct trie_node *trie)
 		 * We compute failed pointer for every node,
 		 * although some of them is never used.
 		 *
+		 * TODO: simplify
 		 */
 		for (parent = node->parent; parent != trie; parent = another) {
 			another = parent->failed;
 			if (another->nexts[TRIE_IDX(node->key)])
 				break;
 		}
-
 		node->failed = (parent != trie ? another->nexts[TRIE_IDX(node->key)] : trie);
 
+		/*
+		 * A pretty independent part for matching counts
+		 */
 		if (node->end)
-			clist_append(node, node->ends);
-
+			++node->ends;
 		if (node->failed != trie)
-			clist_for_each(pos, node->failed->ends)
-				clist_append(pos->data, node->ends);
+			node->ends += node->failed->ends;
 
 		for (i = 0; i < TRIE_ASZ; ++i)
 			if (node->nexts[i])
@@ -91,7 +93,7 @@ void aho_corasick_simple(const char *s, const struct trie_node *trie,
 			node = node->failed;
 		if (node->nexts[chid]) {
 			node = node->nexts[chid];
-			if (!clist_empty(node->ends) && onmatch(node))
+			if (node->ends && onmatch(node))
 				return;
 		}
 	}

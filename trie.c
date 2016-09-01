@@ -1,0 +1,1 @@
+/home/wcc/OnlineJudge/Source/string/trie.c

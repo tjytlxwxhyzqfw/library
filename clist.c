@@ -32,6 +32,8 @@ struct clist_node *clist_node_alloc(void *data)
 
 struct clist {
 	struct clist_node *first;
+	struct clist_node *iterator;
+	int size;
 };
 
 struct clist *clist_alloc(void)
@@ -41,6 +43,8 @@ struct clist *clist_alloc(void)
 	clist = malloc(sizeof(struct clist));
 	assert(clist);
 	clist->first = NULL;
+	clist->iterator = NULL;
+	clist->size = 0;
 
 	return clist;
 }
@@ -48,6 +52,8 @@ struct clist *clist_alloc(void)
 void clist_append(void *data, struct clist *clist)
 {
 	struct clist_node *node = clist_node_alloc(data);
+
+	++clist->size;
 	
 	if (clist->first == NULL) {
 		clist->first = node;
@@ -68,6 +74,8 @@ void clist_append(void *data, struct clist *clist)
 void clist_push(void *data, struct clist *clist)
 {
 	struct clist_node *node;
+
+	++clist->size;
 
 	node = clist_node_alloc(data);
 	if (clist->first == NULL) {
@@ -94,6 +102,8 @@ void *clist_pop(struct clist *clist)
 	if (clist->first == NULL)
 		return NULL;
 
+	--clist->size;
+
 	target = clist->first;
 	clist->first = target->next;
 
@@ -115,5 +125,5 @@ void *clist_pop(struct clist *clist)
 }
 
 #define clist_empty(li) ((li)->first == NULL ? 1 : 0)
-#define clist_for_each(x, li) for((x) = (li)->first; (x); (x) = (x)->next)
-#define clist_data(n, t) ((t)(n->data))
+#define clist_for_each(li) for((li)->iterator = (li)->first; (li)->iterator; (li)->iterator = (li)->iterator->next)
+#define clist_data(li, t) ((t)((li)->iterator->data))

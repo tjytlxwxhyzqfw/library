@@ -34,7 +34,6 @@ int main(void)
 	char buf[100], *str;
 	int cmd;
 
-	freopen("tmp", "r", stdin);
 	setbuf(stdout, NULL);
 
 	trie = trie_node_new('r');

@@ -1,3 +1,6 @@
+#ifndef _TJYTLXWXHYZQFW_TRIE_C
+#define _TJYTLXWXHYZQFW_TRIE_C
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +17,7 @@ struct trie_node {
 	struct trie_node *nexts[TRIE_ASZ];
 
 	struct trie_node *failed;
-	struct clist *ends;
+	int ends;
 };
 
 struct trie_node *trie_node_new(char key)
@@ -30,7 +33,7 @@ struct trie_node *trie_node_new(char key)
 	memset(node->nexts, 0, TRIE_ASZ * sizeof(struct trie_node *));
 
 	node->failed = NULL;
-	node->ends = clist_alloc();
+	node->ends = 0;
 
 	return node;
 }
@@ -81,3 +84,5 @@ void trie_remove(char *s, struct trie_node *trie)
 	if (node)
 		node->end = 0;
 }
+
+#endif

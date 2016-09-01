@@ -1,5 +1,7 @@
 /*
  * Knuth-Morris-Prrat
+ *
+ * need nothing
  */
 
 struct kmp_param;

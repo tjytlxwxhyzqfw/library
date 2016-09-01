@@ -7,10 +7,9 @@ char strs[128][128];
 void clist_print(struct clist *list)
 {
 	char *s;
-	struct clist_node *node;
 
-	clist_for_each(node, list)
-		printis(0, 0, "%s, ", clist_data(node, char *));
+	clist_for_each(list)
+		printis(0, 0, "%s, ", clist_data(list, char *));
 	puts("");
 }
 
