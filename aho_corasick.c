@@ -1,1 +1,0 @@
-/home/wcc/OnlineJudge/Source/string/aho_corasick.c
