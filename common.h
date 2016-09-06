@@ -13,8 +13,8 @@
 #define SWP(a, b) do {a ^= b; a ^= a; b ^= a} while(0)
 
 /* Set x to X_MAX if x is negetive (which is caused by overflow) */
-#define IOF(p) ((p) < 0 ? INT_MAX : (p))
-#define LLOF(p) ((p) < 0 ? LLONG_MAX :(p))
+#define IOF(p) ((p) = ((p) < 0 ? INT_MAX : (p)))
+#define LLOF(p) ((p) = ((p) < 0 ? LLONG_MAX :(p)))
 
 /* is x in range [start, end)*/
 #define IR(x, start, end) ((x) >= (start) && (x) < (end))

@@ -13,7 +13,13 @@
 /* a^b % n */
 long long numth_modexp(long long a, long long b, long long n);
 
-/* gcd(|a|, |b|) , gcd(0, 0) = 0 */
+/* Return a **non-negetive** number denoting greatest common divisor
+ * of |a| and |b|. 
+ * @ia524
+ *
+ * gcd(0, 0) = 0 
+ * 
+ */
 long long numth_gcd(long long a, long long b);
 
 /* *d = |a| * x + |b| * y , 0 = 0*0 + 0*0 */
@@ -74,9 +80,8 @@ int numth_mle(long long a, long long b, long long n, long long *x,
  */
 int numth_divisors(long long k, long long divs[], long long *ndivs);
 
-static long long numth_do_gcd(long long greater, long long lesser);
-static void numth_do_gcd_e(long long greater, long long lesser,
-	long long *d, long long *x, long long *y);
+static long long numth_do_gcd(long long a, long long b);
+static void numth_do_gcd_e(long long grt, long long les, long long *d, long long *x, long long *y);
 
 long long numth_modexp(long long a, long long b, long long n)
 {
@@ -101,9 +106,13 @@ long long numth_modexp(long long a, long long b, long long n)
 
 long long numth_gcd(long long a, long long b)
 {
-	assert(a != 0 || b != 0);
-	if (a < b)
-		return numth_do_gcd(b, a);
+	if (a == 0 && b == 0)
+		return 0;
+	if (a < 0)
+		a *= -1;
+	if (b < 0)
+		b *= -1;
+	/* We DON'T need a > b */
 	return numth_do_gcd(a, b);
 }
 
@@ -123,8 +132,7 @@ static long long numth_do_gcd(long long a, long long b)
 	return b;
 }
 
-void numth_gcd_e(long long a, long long b, long long *d,
-	long long *x, long long *y)
+void numth_gcd_e(long long a, long long b, long long *d, long long *x, long long *y)
 {
 	if (a == 0 && b == 0) {
 		*d = *x = *y = 0;
@@ -142,8 +150,7 @@ void numth_gcd_e(long long a, long long b, long long *d,
 		numth_do_gcd_e(a, b, d, x, y);
 }
 
-static void numth_do_gcd_e(long long a, long long b,
-	long long *d, long long *x, long long *y)
+static void numth_do_gcd_e(long long a, long long b, long long *d, long long *x, long long *y)
 {
 	long long tmp;
 

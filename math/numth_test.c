@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "/home/wcc/OnlineJudge/source/common.h"
+#include "/home/wcc/Source/common.h"
 
 #include "numth.c"
 
@@ -58,7 +58,7 @@ int test_mle(void)
 	return 0;
 }
 
-int test_divisors(void)
+int main(void)
 {
 	long long k, i;
 	long long divs[10000], ndivs;
@@ -67,13 +67,14 @@ int test_divisors(void)
 		numth_divisors(k, divs, &ndivs);
 		for (i = 0; i < ndivs; ++i)
 			printf("%lld, ", divs[i]);
+		printf("\nndivs: %lld\n", ndivs);
 		printf("\n");
 	}
 
 	return 0;
 }
 
-int main(void)
+int find_divs(void)
 {
 	long long i;
 	long long divs[100000], ndivs, ndivs_max;
