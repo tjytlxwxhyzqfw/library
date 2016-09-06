@@ -5,11 +5,10 @@
 #ifndef _TJYTLXWXHYZQFW_NUMTH_C
 #define _TJYTLXWXHYZQFW_NUMTH_C
 
-#define NUMTH_CORRECT(x, mod) ((x) += ((x) < 0 ? (mod) : 0))
-
-#define NUMTH_ENS (-1) /* error: no solution */
-
 #include <assert.h>
+
+#define NUMTH_CORRECT(x, mod) ((x) += ((x) < 0 ? (mod) : 0))
+#define NUMTH_ENS (-1) /* error: no solution */
 
 /* a^b % n */
 long long numth_modexp(long long a, long long b, long long n);
@@ -154,8 +153,10 @@ int numth_mle(long long a, long long b, long long n, long long *solution,
 
 	numth_gcd_e(a, n, &d, &x, &y);
 	assert(d != 0); //d=0 if and only if a=b=0
+
 	if (b % d)
 		return NUMTH_ENS;
+
 	*solution = ((b / d) * (x % n)) % n;
 	NUMTH_CORRECT(*solution, n);
 	*delta = n / d;
