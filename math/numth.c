@@ -20,8 +20,7 @@ long long numth_gcd(long long a, long long b);
 void numth_gcd_e(long long a, long long b, long long *d, long long *x,
 	long long *y);
 
-/*
- * Modular linear equation solver
+/** Modular linear equation
  * @ia534
  *
  * |a|*x = |b| (mod |n|), there are gcd(|a|, |n|) solutions,
@@ -49,7 +48,31 @@ int numth_mle(long long a, long long b, long long n, long long *x,
 #define numth_for_each_solution(i, x, n, delta) \
 	for ((i) = 0; (i) < (n) / (delta); \
 		(i) += 1, (x) = ((x) + (delta)) % (n))
-	
+
+/** Compute divisors of positive number k.
+ *
+ * k: **positive** number
+ * divs: array to hold divisors of k
+ * ndivs: numbers of divisors of k
+ *
+ * This function doesn't check boundary, please make sure that
+ * 	divs[] is big enouth.
+ * 
+ * bits		divisors	mutipile
+ * 1		4		
+ * 2		12		3
+ * 3		32		2.67
+ * 4		64		2
+ * 5		128		2
+ * 6		240		1.875
+ * 7		448		1.86
+ * 8		768		1.714
+ * 9		< 1316
+ * 10		< 2256
+ * 11		< 3867
+ * 12		< 6629
+ */
+int numth_divisors(long long k, long long divs[], long long *ndivs);
 
 static long long numth_do_gcd(long long greater, long long lesser);
 static void numth_do_gcd_e(long long greater, long long lesser,
@@ -160,6 +183,32 @@ int numth_mle(long long a, long long b, long long n, long long *solution,
 	*solution = ((b / d) * (x % n)) % n;
 	NUMTH_CORRECT(*solution, n);
 	*delta = n / d;
+	return 0;
+}
+
+int numth_divisors(long long k, long long divs[], long long *ndivs)
+{
+	long long i, n;
+
+	assert(k > 0);
+
+	n = 0;
+	for (i = 1; i * i < k; ++i)
+		if (k % i == 0)
+			divs[n++] = i;
+
+	if (i * i == k) {
+		divs[n++] = i;
+		i = n - 2;
+	} else {
+		i = n - 1;
+	}
+
+	for (; i >= 0; --i)
+		divs[n++] = k / divs[i];
+
+	*ndivs = n;
+
 	return 0;
 }
 

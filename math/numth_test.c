@@ -41,7 +41,7 @@ int test_gcd_e(void)
 	return 0;
 }
 
-int main(void)
+int test_mle(void)
 {
 	long long a, b, n, x, delta;
 	long long i;
@@ -57,3 +57,37 @@ int main(void)
 
 	return 0;
 }
+
+int test_divisors(void)
+{
+	long long k, i;
+	long long divs[10000], ndivs;
+
+	while (scanf("%lld", &k) == 1) {
+		numth_divisors(k, divs, &ndivs);
+		for (i = 0; i < ndivs; ++i)
+			printf("%lld, ", divs[i]);
+		printf("\n");
+	}
+
+	return 0;
+}
+
+int main(void)
+{
+	long long i;
+	long long divs[100000], ndivs, ndivs_max;
+
+	ndivs_max = 0;
+	for (i = 1; i < 1000000000000; ++i) {
+		numth_divisors(i, divs, &ndivs);
+		if (ndivs > ndivs_max) {
+			ndivs_max = ndivs;
+			printf("ndivs: %8lld, i: %8lld\n", ndivs, i);
+		}
+	}
+
+	return 0;
+}
+
+
