@@ -1,0 +1,113 @@
+#! /bin/python
+
+import os
+import re
+import sys
+
+headdir = "/home/wcc/Source/"
+srcdir = "/home/wcc/OnlineJudge/cf"
+
+#TODO: 写一个文件类
+
+#FIXME: // /*
+#FIXME: "//", "/*"
+def erase_comment(src):
+	result = []
+	comment1 = r"/\*.*?\*/"
+	comment2 = r"//.*"
+	comment_left = r"/\*.*?$"
+	comment_right = r"^.*?\*/"
+	incomment = False
+	for line in src:
+		line = re.sub(comment1, "", line)
+		if re.search(comment_left, line) != None:
+			line = re.sub(comment_left, "", line)
+			incomment = True
+		if re.search(comment_right, line) != None:
+			line = re.sub(comment_right, "", line)
+			incomment = False
+		line = re.sub(comment2, "", line)
+		if not incomment and line.strip() != "":
+			result.append(line)
+	return result
+
+def erase_debug(src):
+	result = []
+	debug_head = r'#include\s+"debug.c"'
+	debug_single_line = r"printis\(.*?\);"
+	for line in src:
+		line = re.sub(debug_head, "", line)
+		line = re.sub(debug_single_line, "", line)
+		if line.strip() != "":
+			result.append(line)
+	return result
+
+def srccode(path):
+	try:
+		pointc = open(path)
+	except:
+		print "Cannot open: %s"%path
+		raise RuntimeError
+	src = [line for line in pointc]
+	pointc.close()
+	return src
+
+def parse_header(src):
+	header = r'#include\s+"(.*?)"'
+	headers = []
+	for line in src:
+		match = re.search(header, line)
+		if match:
+			headers.append(match.groups()[0])
+	return headers
+
+def replace_header(src, hsrcs):
+	header = r'#include\s+"(.*?)"'
+	result = []
+	for line in src:
+		match = re.search(header, line)
+		if match:
+			current_header = match.groups()[0]
+			line = hsrcs[current_header]
+			print "replace header: %s"%current_header
+		if line.strip():
+			result.append(line)
+	return result
+
+def header_full_path(header):
+	
+	prefix = headdir if header.endswith(".h") else os.path.join(headdir, "src")
+	return os.path.join(prefix, header)
+
+if __name__ == "__main__":
+	path = os.path.join(srcdir, sys.argv[1])
+	print "source file: %s"%path
+
+	src = srccode(path)
+
+	headers = parse_header(src)
+	print "headers: %s"%reduce(lambda x, y: "%s, %s"%(x,y), headers)
+
+	hsrcs = {}
+	for header in headers:
+		path = header_full_path(header)
+		#print "erase header file: %s"%path
+		hsrc = erase_comment(srccode(path))
+		hsrcs[header] = reduce(lambda x, y: x + y, hsrc)
+
+	src = replace_header(src, hsrcs)
+	print "%s"%reduce(lambda x, y: x + y, src)
+	
+
+
+
+
+
+
+
+
+
+
+
+
+	
