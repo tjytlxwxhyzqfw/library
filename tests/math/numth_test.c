@@ -5,9 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "/home/wcc/Source/common.h"
-
-#include "numth.c"
+#include "common.h"
+#include "numth.h"
 
 int test_modexp(void)
 {
@@ -43,12 +42,12 @@ int test_gcd_e(void)
 
 int test_mle(void)
 {
-	long long a, b, n, x, delta;
+	long long a, b, n, x, gcd;
 	long long i;
 
 	while (scanf("%lld%lld%lld", &a, &b, &n) == 3) {
-		if (numth_mle(a, b, n, &x, &delta) == 0) {
-			numth_for_each_solution(i, x, ABS(n), delta)
+		if (numth_mle(a, b, n, &x, &gcd) == 0) {
+			numth_for_each_solution(i, x, ABS(n), gcd)
 				printf("%lld\n", x);
 		} else {
 			printf("no solution\n");
@@ -58,7 +57,7 @@ int test_mle(void)
 	return 0;
 }
 
-int main(void)
+int test_divisors(void)
 {
 	long long k, i;
 	long long divs[10000], ndivs;
@@ -91,4 +90,8 @@ int find_divs(void)
 	return 0;
 }
 
-
+int main(void)
+{
+	test_mle();
+	return 0;
+}

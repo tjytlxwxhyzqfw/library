@@ -1,84 +1,9 @@
-/*
- * numth
+/**
+ * Algorithms for Number Theory
+ *
+ * @author wcc
  */
-
-#ifndef _TJYTLXWXHYZQFW_NUMTH_C
-#define _TJYTLXWXHYZQFW_NUMTH_C
-
-#include <assert.h>
-
-#define NUMTH_CORRECT(x, mod) ((x) += ((x) < 0 ? (mod) : 0))
-#define NUMTH_ENS (-1) /* error: no solution */
-
-/* a^b % n */
-long long numth_modexp(long long a, long long b, long long n);
-
-/* Return a **non-negetive** number denoting greatest common divisor
- * of |a| and |b|. 
- * @ia524
- *
- * gcd(0, 0) = 0 
- * 
- */
-long long numth_gcd(long long a, long long b);
-
-/* *d = |a| * x + |b| * y , 0 = 0*0 + 0*0 */
-void numth_gcd_e(long long a, long long b, long long *d, long long *x,
-	long long *y);
-
-/** Modular linear equation
- * @ia534
- *
- * |a|*x = |b| (mod |n|), there are gcd(|a|, |n|) solutions,
- * this function returns just one of them.
- *
- * Parameters:
- * 	n:**positive** number
- * 	delta: = n / gcd(a, n)
- * 	solution: st. |a|*x = |b| (mod n), if a < 0, b > 0 
- * 		then -x is a solution of ax=b(mod n)
- * 	
- */
-int numth_mle(long long a, long long b, long long n, long long *x,
-	long long *delta);
-
-/*
- * @ia534
- *
- * This ineffictive as there is a 'n/delta'.
- *
- * Important:
- * 	1. i & x must be variables.
- * 	2. ensure that the equation dose have solutions!
- */
-#define numth_for_each_solution(i, x, n, delta) \
-	for ((i) = 0; (i) < (n) / (delta); \
-		(i) += 1, (x) = ((x) + (delta)) % (n))
-
-/** Compute divisors of positive number k.
- *
- * k: **positive** number
- * divs: array to hold divisors of k
- * ndivs: numbers of divisors of k
- *
- * This function doesn't check boundary, please make sure that
- * 	divs[] is big enouth.
- * 
- * bits		divisors	mutipile
- * 1		4		
- * 2		12		3
- * 3		32		2.67
- * 4		64		2
- * 5		128		2
- * 6		240		1.875
- * 7		448		1.86
- * 8		768		1.714
- * 9		< 1316
- * 10		< 2256
- * 11		< 3867
- * 12		< 6629
- */
-int numth_divisors(long long k, long long divs[], long long *ndivs);
+#include "../../numth.h"
 
 static long long numth_do_gcd(long long a, long long b);
 static void numth_do_gcd_e(long long grt, long long les, long long *d, long long *x, long long *y);
@@ -167,8 +92,7 @@ static void numth_do_gcd_e(long long a, long long b, long long *d, long long *x,
 	*y = (tmp - (a / b) * (*y));
 }
 
-int numth_mle(long long a, long long b, long long n, long long *solution,
-	long long *delta)
+int numth_mle(long long a, long long b, long long n, long long *solution, long long *gcd)
 {
 	long long d, x, y;
 
@@ -189,7 +113,8 @@ int numth_mle(long long a, long long b, long long n, long long *solution,
 
 	*solution = ((b / d) * (x % n)) % n;
 	NUMTH_CORRECT(*solution, n);
-	*delta = n / d;
+	*gcd = d;
+
 	return 0;
 }
 
@@ -218,5 +143,3 @@ int numth_divisors(long long k, long long divs[], long long *ndivs)
 
 	return 0;
 }
-
-#endif
