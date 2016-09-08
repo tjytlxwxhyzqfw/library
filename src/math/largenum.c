@@ -1,7 +1,18 @@
-#ifndef _TJYTLXWXHYZQFW_LARGE_NUMBER_C
-#define _TJYTLXWXHYZQFW_LARGE_NUMBER_C
+#ifndef _WCC_LARGENUM_C
+#define _WCC_LARGENUM_C
 
+#include <math.h>
 #include <string.h>
+
+/* stirling's approximation:
+ *	      ___ /n\ n
+ *	n! = /2Pn|---| * T
+ *		  \e/
+ * T = 1 + 1/(12n) + 1/(288n^2) + o(n^-3)
+ */
+#define largenum_log10fact(n) ((double).5 * log10(2 * acos(-1) * (n)) \
+	+ (n) * log10((n) / exp(1)) \
+	+ log10((double)1 + (double)1 / (12 * (n)) + (double)1 / ((double)288 * (n) * (n))))
 
 void largenum_mul(char *x, char *y, char *res)
 {

@@ -4,12 +4,25 @@ import os
 import re
 import sys
 
-rootdir = "/home/wcc/OnlineJudge/source/"
-headerdir = rootdir
-sourcedir = os.path.join(rootdir, "src")
-workdir = "/home/wcc/OnlineJudge/cf"
+workdir = "."
+rootdir = ""
+headerdir = ""
+sourcedir = ""
 
-sys.path.append(workdir)
+def fatal(error):
+	print "fatal: %s"%str(error)
+	sys.exit(1)
+
+def initenv():
+	global rootdir, headerdir, sourcedir
+	rootdir = os.getenv("WCC_LIB_PATH")
+	if not rootdir:
+		raise RuntimeError("intenv(): need 'WCC_LIB_PATH'")
+	if not os.path.exists(rootdir):
+		raise RuntimeError("intenv(): invalid 'rootdir': %s"%rootdir)
+	headerdir = rootdir
+	sourcedir = os.path.join(rootdir, "src")
+
 from source import Source as Source
 
 #TODO: file class
@@ -31,42 +44,34 @@ def source_full_path(name):
 			break
 	return source_path
 
-def assemble(path):
-	print "source file: %s"%path
-	src = srccode(path)
-
-	headers = parse_header(src)
-	print "headers: %s"%reduce(lambda x, y: "%s, %s"%(x,y), headers)
-
-	hsrcs = {}
-	for header in headers:
-		path = header_full_path(header)
-		#print "erase header file: %s"%path
-		hsrc = erase_comment(srccode(path))
-		hsrcs[header] = reduce(lambda x, y: x + y, hsrc)
-
-	src = replace_header(src, hsrcs)
-	print "%s"%reduce(lambda x, y: x + y, src)
-
 if __name__ == "__main__":
-	work_path = os.path.join(workdir, sys.argv[1])
-	work = Source(work_path)
-	work.erase_comment()
-	print work.headers
+	print "Source Assembler"
+	try:
+		initenv()
+		print "headerdir: %s"%headerdir
+		print "sourcedir: %s"%sourcedir
+		print "workdir: %s"%workdir
+		work_path = os.path.join(workdir, sys.argv[1])
+		print "work_path: %s"%work_path
+		work = Source(work_path)
+		work.erase_comment()
+		print "headers: %s"%work.headers
+	except RuntimeError, e:
+		fatal(e)
 	for h in work.headers:
 		try:
 			header_path = header_full_path(h)
 			print "header: %s"%header_path
 			header = Source(header_path)
 			work.replace_line(r"#include.*?%s"%h, str(header.erase_comment()))
-		except IOError:
-			print "Warning: header not found: %s"%header_path
+		except RuntimeError, e:
+			print "Warning: header: %s"%e
 		try:
 			source_path = source_full_path(h.replace(".h", ".c"))
 			print "source: %s"%source_path
 			source = Source(source_path)
 			work.code.extend(source.erase_comment().erase_line(r"#include.*?%s"%h).code)
-		except IOError:
-			print "Warning: source not found: %s"%source_path
+		except RuntimeError, e:
+			print "Warning: source: %s"%e
 	work.write_to_file("0000.c")
 	print "0000.c generated"
