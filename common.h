@@ -12,20 +12,18 @@
 
 /* Swap */
 #define SWP(a, b) if ((a) != (b)) do {(a) ^= (b); (b) ^= (a); (a) ^= (b);} while(0)
-#define MAX(x,y) ((x) < (y) ? (y) : (x))
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-
 /* Set x to X_MAX if x is negetive (which is caused by overflow) */
 #define IOF(p) ((p) = ((p) < 0 ? INT_MAX : (p)))
 #define LLOF(p) ((p) = ((p) < 0 ? LLONG_MAX :(p)))
 
 /* Is x in range [start, end) */
-#define IR(x, start, end) ((x) >= (start) && (x) < (end))
+#define ir(x, start, end) ((x) >= (start) && (x) < (end))
 /* Is x in range [start, end], 'E' stand for 'equal' */
-#define IRE(x, start, end) ((x) >= (start) && (x) <= (end))
-
+#define ire(x, start, end) ((x) >= (start) && (x) <= (end))
+#define max(x,y) ((x) < (y) ? (y) : (x))
+#define min(x, y) ((x) < (y) ? (x) : (y))
 /* Absolute value */
-#define ABS(x) ((x) < 0 ? (x) * (-1) : (x))
+#define abv(x) ((x) < 0 ? (x) * (-1) : (x))
 
 #define forn(i, n) for ((i) = 0; (i) < (n); (i) += 1)
 #define fore(i, n) for ((i) = 0; (i) <= (n); (i) += 1)

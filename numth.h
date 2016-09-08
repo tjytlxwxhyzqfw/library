@@ -9,8 +9,12 @@
 
 #include <assert.h>
 
-#define NUMTH_CORRECT(x, mod) ((x) += ((x) < 0 ? (mod) : 0))
 #define NUMTH_ENS (-1) /* error: no solution */
+
+#define NUMTH_MODPLS(x, y, p) ((((x) % (p)) + ((y) % (p))) % p)
+#define NUMTH_MODMUL(x, y, p) ((((X) % (P)) * ((y) % (p))) % p)
+
+#define NUMTH_CORRECT(x, mod) ((x) += ((x) < 0 ? (mod) : 0))
 
 /**
  * Modular exponentiation 

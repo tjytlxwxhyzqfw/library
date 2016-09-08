@@ -4,85 +4,35 @@ import os
 import re
 import sys
 
-headdir = "/home/wcc/Source/"
-srcdir = "/home/wcc/OnlineJudge/cf"
+rootdir = "/home/wcc/OnlineJudge/source/"
+headerdir = rootdir
+sourcedir = os.path.join(rootdir, "src")
+workdir = "/home/wcc/OnlineJudge/cf"
 
-#TODO: 写一个文件类
+sys.path.append(workdir)
+from source import Source as Source
 
-#FIXME: // /*
-#FIXME: "//", "/*"
-def erase_comment(src):
-	result = []
-	comment1 = r"/\*.*?\*/"
-	comment2 = r"//.*"
-	comment_left = r"/\*.*?$"
-	comment_right = r"^.*?\*/"
-	incomment = False
-	for line in src:
-		line = re.sub(comment1, "", line)
-		if re.search(comment_left, line) != None:
-			line = re.sub(comment_left, "", line)
-			incomment = True
-		if re.search(comment_right, line) != None:
-			line = re.sub(comment_right, "", line)
-			incomment = False
-		line = re.sub(comment2, "", line)
-		if not incomment and line.strip() != "":
-			result.append(line)
-	return result
+#TODO: file class
 
-def erase_debug(src):
-	result = []
-	debug_head = r'#include\s+"debug.c"'
-	debug_single_line = r"printis\(.*?\);"
-	for line in src:
-		line = re.sub(debug_head, "", line)
-		line = re.sub(debug_single_line, "", line)
-		if line.strip() != "":
-			result.append(line)
-	return result
+def header_full_path(name):
+	assert name.endswith(".h")
+	path = os.path.join(headerdir, name)
+	assert os.path.exists(path)
+	return path
 
-def srccode(path):
-	try:
-		pointc = open(path)
-	except:
-		print "Cannot open: %s"%path
-		raise RuntimeError
-	src = [line for line in pointc]
-	pointc.close()
-	return src
+def source_full_path(name):
+	assert name.endswith(".c")
+	source_path = None
+	for root, dirs, files in os.walk(rootdir):
+		if re.search(r"/\.", root):
+			continue
+		if name in files:
+			source_path = os.path.join(root, name)
+			break
+	return source_path
 
-def parse_header(src):
-	header = r'#include\s+"(.*?)"'
-	headers = []
-	for line in src:
-		match = re.search(header, line)
-		if match:
-			headers.append(match.groups()[0])
-	return headers
-
-def replace_header(src, hsrcs):
-	header = r'#include\s+"(.*?)"'
-	result = []
-	for line in src:
-		match = re.search(header, line)
-		if match:
-			current_header = match.groups()[0]
-			line = hsrcs[current_header]
-			print "replace header: %s"%current_header
-		if line.strip():
-			result.append(line)
-	return result
-
-def header_full_path(header):
-	
-	prefix = headdir if header.endswith(".h") else os.path.join(headdir, "src")
-	return os.path.join(prefix, header)
-
-if __name__ == "__main__":
-	path = os.path.join(srcdir, sys.argv[1])
+def assemble(path):
 	print "source file: %s"%path
-
 	src = srccode(path)
 
 	headers = parse_header(src)
@@ -97,17 +47,26 @@ if __name__ == "__main__":
 
 	src = replace_header(src, hsrcs)
 	print "%s"%reduce(lambda x, y: x + y, src)
-	
 
-
-
-
-
-
-
-
-
-
-
-
-	
+if __name__ == "__main__":
+	work_path = os.path.join(workdir, sys.argv[1])
+	work = Source(work_path)
+	work.erase_comment()
+	print work.headers
+	for h in work.headers:
+		try:
+			header_path = header_full_path(h)
+			print "header: %s"%header_path
+			header = Source(header_path)
+			work.replace_line(r"#include.*?%s"%h, str(header.erase_comment()))
+		except IOError:
+			print "Warning: header not found: %s"%header_path
+		try:
+			source_path = source_full_path(h.replace(".h", ".c"))
+			print "source: %s"%source_path
+			source = Source(source_path)
+			work.code.extend(source.erase_comment().erase_line(r"#include.*?%s"%h).code)
+		except IOError:
+			print "Warning: source not found: %s"%source_path
+	work.write_to_file("0000.c")
+	print "0000.c generated"
