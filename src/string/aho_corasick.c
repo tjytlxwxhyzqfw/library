@@ -1,42 +1,53 @@
 /*
  * Aho-Corasick Automathine
  *
- * need:
- * 	clist.c
- * 	trie.c
- */
-
-/*
- * Fill a trie with failed pointers.
+ * @author wcc
+ * @see trie.c
  *
- * We attach a string to each node in trie.
- * That string is the path from root to the node;
+ * require: clist.c, trie.c
+ * last modified: 2016-09-09 15:01
  *
- * Thus, if the failed pointer of N1 points to N2,
- * then N2 is the longest suffix of N1; 
+ * To turn a trie to an AC-Automachine, we attach a string to each
+ * node in trie, that string is the path from root to the node.
+ * Thus, if the failed pointer of N1 points to N2 then the string of N2
+ * is the longest suffix of the string of N1:
  *
- * N1: #######
+ * N1:R#######
  *           | <--- failed pointer
  *           V
- * N2:   #####
+ * N2:  R#####
+ * 		('R' means 'root')
  *
- * Once a mismatch occured, we follow failed pointers
- * until a suffix is met. 
+ * Once a mismatch occured in a filled trie, we follow failed pointers
+ * until another node is met. This procedure looks just like that
+ * we throw away (as few as we can) some prefix of the current string
+ * (of the current node) to be same with a suffix of the input string
+ * since the initial string is not a suffix.
  *
- * Since the node which is currnetly mismatched does't have a failed
- * pointer, we (have to) check its parent and terminate at a suffix of
- * node->parent that is followd by node->key.
+ * Since the node currnetly mismatched does't have a failed pointer during
+ * aho_corasick_fill() procedure, we (have to) check and flow the failed pointer
+ * of its parent until another occourence of the mismatched node is found (as a
+ * child of the node linked by the initial parent's failed pointer).
  *
- * Once we find a suffix, it must be the longgest suffix in the trie
- * (prove it).
+ * Once we have found a node, the string of the newly-founded node must be the
+ * longgest suffix of the string of the mismatched node in the trie(prove it).
  *
  * Here are some useful properties: 
- * 1. Failed pointer of N always points to a node with key == N->key.
+ * 1. Failed pointer of N always points to a node with key == N->key.->key is a letter.
  * 2. If ch in trie mismatches and return back to trie root, then *trie must not have
  * 	an arc to ch, because if there were, ch should have been returned
  * 	to the child of *trie;
  * 3. Failed pointers link up all strings and sub-strings in trie that end up with
  * 	a specific character.
+ */
+
+/*
+ * Fill a trie with failed pointers and matching counts.
+ *
+ * @param trie - A trie with two fields added in its node:
+ * 	->ends and ->failed. ->ends denotes the number of
+ * 	end nodes from current node to the last node linked
+ * 	by the failed pointers.
  */
 void aho_corasick_fill(struct trie_node *trie)
 {
@@ -79,6 +90,13 @@ void aho_corasick_fill(struct trie_node *trie)
 	}
 }
 
+/*
+ * Simple aho-corasick algorithm
+ *
+ * @param s - a long string(or text) to be analized
+ * @para trie - trie of key words
+ * @param onmatch - call-back function on matching
+ */
 void aho_corasick_simple(const char *s, const struct trie_node *trie,
 	int (*onmatch)(const struct trie_node *))
 {
@@ -89,6 +107,7 @@ void aho_corasick_simple(const char *s, const struct trie_node *trie,
 	len = strlen(s);
 	for (i = 0; i < len; ++i) {
 		chid = TRIE_IDX(s[i]);
+		/* we don't call onmatch() during moving along failed pointer */
 		while (node->nexts[chid] == NULL && node != trie)
 			node = node->failed;
 		if (node->nexts[chid]) {

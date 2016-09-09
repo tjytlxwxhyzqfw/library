@@ -1,7 +1,6 @@
 ROOT:=$(shell pwd)
 SRC:=$(ROOT)/src
 LIB:=$(ROOT)/lib
-TEST:=$(ROOT)/tests
 
 CC:=gcc -Wall -L$(LIB) -Wl,-rpath=$(LIB)
 ALL:=$(LIB)/libnumth.so
