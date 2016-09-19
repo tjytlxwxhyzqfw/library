@@ -1,24 +1,7 @@
-#ifndef _TJYTLXWXHYZQFW_TRIE_C
-#define _TJYTLXWXHYZQFW_TRIE_C
-
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define TRIE_ASZ 128
-#define TRIE_ABS 0
-#define TRIE_IDX(x) ((x) - TRIE_ABS)
-
-struct trie_node {
-	/* consider key as value of node's handle */
-	char key;
-	char end;
-	struct trie_node *parent;
-	struct trie_node *nexts[TRIE_ASZ];
-
-	struct trie_node *failed;
-	int ends;
-};
+/**
+ * @author wcc
+ */
+#include "../../trie.h"
 
 struct trie_node *trie_node_new(char key)
 {
@@ -32,8 +15,10 @@ struct trie_node *trie_node_new(char key)
 	node->parent = NULL;
 	memset(node->nexts, 0, TRIE_ASZ * sizeof(struct trie_node *));
 
+	#ifdef TRIE_AHO_CORASICK
 	node->failed = NULL;
 	node->ends = 0;
+	#endif
 
 	return node;
 }
@@ -58,7 +43,7 @@ void trie_insert(char *s, struct trie_node *trie)
 		++i;
 	}
 
-	node->end = 1;
+	++node->end;
 }
 
 struct trie_node *trie_find(char *s, struct trie_node *trie)
@@ -82,7 +67,5 @@ void trie_remove(char *s, struct trie_node *trie)
 
 	node = trie_find(s, trie);
 	if (node)
-		node->end = 0;
+		--node->end;
 }
-
-#endif

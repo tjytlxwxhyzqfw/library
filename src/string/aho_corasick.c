@@ -5,7 +5,9 @@
  * @see trie.c
  *
  * require: clist.c, trie.c
- * last modified: 2016-09-09 15:01
+ * last modified: 2016-09-19 16:52
+ *
+ * To use these functions, #define TRIE_AHO_CORASICK in trie.h
  *
  * To turn a trie to an AC-Automachine, we attach a string to each
  * node in trie, that string is the path from root to the node.

@@ -1,7 +1,11 @@
 #ifndef _TJYTLXWXHYZQFW_COMMON_H
 #define _TJYTLXWXHYZQFW_COMMON_H
 
+#include <assert.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define offset(t,m) ((unsigned long)&(((t*)0)->m))
 #define container_of(a,t,m) ((t*)((unsigned long)a-offset(t,m)))

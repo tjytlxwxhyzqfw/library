@@ -6,24 +6,6 @@
 
 #include "../../segtree.h"
 
-#define SEG_MIN(x, y) ((x) < (y) ? (x) : (y))
-#define SEG_MAX(x, y) ((x) > (y) ? (x) : (y))
-
-#define SEG_LAZY_UPD(r, d, t)\
-	do {\
-		(r)->flag |= SEG_F_UPD;\
-		(t)->remember((r), (d));\
-		(t)->alter((r), (d));\
-	}while(0)
-
-#define SEG_UPDATE_DOWN(r, t) \
-	do {\
-		SEG_LAZY_UPD((r)->left, (r)->history, (t));\
-		SEG_LAZY_UPD((r)->right, (r)->history, (t));\
-		(r)->flag &= (~SEG_F_UPD);\
-		(t)->forget((r));\
-	}while (0);
-
 /* interface */
 
 struct seg_tree *seg_tree_alloc(int nnodes)
@@ -82,15 +64,15 @@ struct seg_node *seg_node_alloc(int begin, int end, struct seg_tree *tree)
 	struct seg_node *node;
 
 	assert(tree->current < tree->nnodes);
-	node = tree->nodes + tree->current++;
+	node = tree->nodes + tree->current;
 
+	node->index = tree->current;
 	node->begin = begin;
 	node->end = end;
 	node->flag = 0UL;
 	node->left = node->right = NULL;
-	memset(&node->data, 0, sizeof(seg_data_t));
-	memset(&node->history, 0, sizeof(seg_data_t));
 
+	++tree->current;
 	return node;
 }
 
@@ -103,49 +85,4 @@ void seg_do_build(struct seg_node *root, struct seg_tree *tree)
 	seg_do_build(root->left, tree);
 	seg_do_build(root->right, tree);
 }
-
-void seg_do_query(int begin, int end, struct seg_node *root, struct seg_tree *tree, seg_data_t *result)
-{
-	if (end < begin)
-		return;
-
-	if (root->begin == begin && root->end == end) {
-		tree->reduce(root, result);
-		return;
-	}
-
-	if (root->flag & SEG_F_UPD)
-		SEG_UPDATE_DOWN(root, tree);
-		
-	seg_do_query(begin, SEG_MIN(root->left->end, end), root->left, tree, result);
-	seg_do_query(SEG_MAX(root->right->begin, begin), end, root->right, tree, result);
-}
-
-void seg_do_alter(int begin, int end, seg_data_t data, struct seg_node *root, struct seg_tree *tree)
-{
-	if (end < begin)
-		return;
-
-	if (root->begin == begin && root->end == end) {
-		SEG_LAZY_UPD(root, data, tree);
-		return;
-	}
-
-	if (root->flag & SEG_F_UPD)
-		SEG_UPDATE_DOWN(root, tree);
-
-	seg_do_alter(begin, SEG_MIN(root->left->end, end), data, root->left, tree);
-	seg_do_alter(SEG_MAX(root->right->begin, begin), end, data, root->right, tree);
-
-	tree->update(root);
-}
-
-#ifdef DEBUG
-
-void printnode(struct seg_node *n)
-{
-	print("I(i, i): s: i, s: i, s: i", _I, n->begin, n->end, "data", n->data, "history", n->history, "upd", n->flag);
-}
-
-#endif
 

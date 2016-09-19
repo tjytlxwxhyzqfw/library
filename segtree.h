@@ -3,6 +3,11 @@
  *
  * @author wcc
  *
+ * TODO: Put ->data and ->history outside.That means the <seg_tree>
+ * structure should just provides a frame.
+ * Put datas outside into arrays and use ((int)(node tree->nodes)) for
+ * array access.
+ *
  * A little bit slow, why ?
  *
  * Each 'struct seg_node' occupies about 48 bytes (sizeof(seg_data) == 8),
@@ -44,6 +49,7 @@
  * 	seg_reduce_t are quite independent by comparison.
  *
  * Example
+ *
  * 	segtree_test.c show a simple segtree with region-add and region-sumary
  * 	1166.c uses point-update and region-query
  * 	1556.c uses region-update and point-query
@@ -62,18 +68,8 @@
 
 #include "debug.c"
 
-#ifndef seg_data_t
-#define seg_data_t int
-#endif
-
 struct seg_node;
 struct seg_tree;
-
-typedef void (*seg_forget_t)(struct seg_node *);
-typedef void (*seg_remember_t)(struct seg_node *, seg_data_t);
-typedef void (*seg_update_t)(struct seg_node *);
-typedef void (*seg_alter_t)(struct seg_node *, seg_data_t);
-typedef void (*seg_reduce_t)(struct seg_node*, seg_data_t *);
 
 /**
  * left, right: children
@@ -83,23 +79,16 @@ typedef void (*seg_reduce_t)(struct seg_node*, seg_data_t *);
  * history -
  */
 struct seg_node {
+	int index;
 	struct seg_node *left, *right;
 	int begin, end;
 	unsigned int flag;
-	seg_data_t data;
-	seg_data_t history;
 };
 
 struct seg_tree {
 	struct seg_node *root;
 	struct seg_node *nodes;
 	int nnodes, current;
-
-	seg_update_t update;
-	seg_alter_t alter;
-	seg_reduce_t reduce;
-	seg_forget_t forget;
-	seg_remember_t remember;
 };
 
 #define SEG_F_UPD (0x1UL)
@@ -112,13 +101,9 @@ void seg_tree_free(struct seg_tree *tree);
 
 /* Recursive worker functions */
 void seg_do_build(struct seg_node *root, struct seg_tree *tree);
-void seg_do_alter(int begin, int end, seg_data_t data, struct seg_node *node, struct seg_tree *tree);
-void seg_do_query(int begin, int end, struct seg_node *root, struct seg_tree *tree, seg_data_t *result);
 
 /* Main Interface */
 void seg_build(int begin, int end, struct seg_tree *tree);
-#define seg_alter(b, e, d, t) seg_do_alter((b), (e), (d), (t)->root, (t))
-#define seg_query(b, e, t, r) do {assert(SEG_COVER((b), (e), (t)->root));seg_do_query((b), (e), (t)->root, (t), (r));}while (0)
 void seg_traverse(void (*f)(struct seg_node *), struct seg_node *node);
 
 #ifdef DEBUG
