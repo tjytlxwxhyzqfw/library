@@ -4,8 +4,8 @@
 
 #include <string.h>
 
-#include "../debug.c"
-#include "kmp.c"
+#include "../../debug.c"
+#include "../../src/string/kmp.c"
 
 void kmap_presuf_test(void)
 {
