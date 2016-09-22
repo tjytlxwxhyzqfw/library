@@ -12,7 +12,7 @@
 #define NUMTH_ENS (-1) /* error: no solution */
 
 #define NUMTH_MODPLS(x, y, p) ((((x) % (p)) + ((y) % (p))) % p)
-#define NUMTH_MODMUL(x, y, p) ((((X) % (P)) * ((y) % (p))) % p)
+#define NUMTH_MODMUL(x, y, p) ((((x) % (p)) * ((y) % (p))) % p)
 
 #define NUMTH_CORRECT(x, mod) ((x) += ((x) < 0 ? (mod) : 0))
 
@@ -101,5 +101,13 @@ int numth_mle(long long a, long long b, long long n, long long *x, long long *gc
  * 12		< 6629
  */
 int numth_divisors(long long k, long long divs[], long long *ndivs);
+
+/**
+ * F[n] % mod
+ * F[0] = 1, F[1] = 1, F[2] = 2, F[3] = 3
+ * @param n
+ * @param mod
+ */
+long long numth_fibonacci(long long n, long long mod);
 
 #endif

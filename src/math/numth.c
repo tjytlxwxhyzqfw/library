@@ -3,10 +3,16 @@
  *
  * @author wcc
  */
+
+#include <string.h>
 #include "../../numth.h"
 
 static long long numth_do_gcd(long long a, long long b);
 static void numth_do_gcd_e(long long grt, long long les, long long *d, long long *x, long long *y);
+#define matident(x) ((x)[0][0] = (x)[1][1] = 1, (x)[0][1] = (x)[1][0] = 0)
+#define matprint(m) printf("%6lld %6lld\n%6lld %6lld\n", (m)[0][0], (m)[0][1], (m)[1][0], (m)[1][1]);
+void matmul(long long x[2][2], long long y[2][2], long long z[2][2], long long mod);
+void matpow(long long mat[2][2], long long n, long long mod);
 
 long long numth_modexp(long long a, long long b, long long n)
 {
@@ -142,4 +148,47 @@ int numth_divisors(long long k, long long divs[], long long *ndivs)
 	*ndivs = n;
 
 	return 0;
+}
+
+long long numth_fibonacci(long long n, long long mod)
+{
+	long long mat[2][2];
+
+	if (n == 0) return 1;
+
+	mat[0][0] = mat[0][1] = mat[1][0] = 1;
+	mat[1][1] = 0;
+
+	matpow(mat, n, mod);
+
+	return mat[0][0];
+}
+
+void matmul(long long x[2][2], long long y[2][2], long long z[2][2], long long mod)
+{
+	z[0][0] = NUMTH_MODPLS(NUMTH_MODMUL(x[0][0], y[0][0], mod), NUMTH_MODMUL(x[0][1], y[1][0], mod), mod);	
+	z[0][1] = NUMTH_MODPLS(NUMTH_MODMUL(x[0][0], y[0][1], mod), NUMTH_MODMUL(x[0][1], y[1][1], mod), mod);
+	z[1][0] = NUMTH_MODPLS(NUMTH_MODMUL(x[1][0], y[0][0], mod), NUMTH_MODMUL(x[1][1], y[1][0], mod), mod);
+	z[1][1] = NUMTH_MODPLS(NUMTH_MODMUL(x[1][0], y[0][1], mod), NUMTH_MODMUL(x[1][1], y[1][1], mod), mod);
+}
+
+void matpow(long long mat[2][2], long long n, long long mod)
+{
+	int i;
+	long long square[2][2], ans[2][2], res[2][2];
+
+	matident(ans);
+	memcpy(square, mat, sizeof(square));
+
+	for (i = 0; i < 64; ++i) {
+		if (n & 1UL) {
+			matmul(ans, square, res, mod);
+			memcpy(ans, res, sizeof(res));
+		}
+		matmul(square, square, res, mod);
+		memcpy(square, res, sizeof(res));
+		n >>= 1;
+	}
+
+	memcpy(mat, ans, sizeof(ans));
 }

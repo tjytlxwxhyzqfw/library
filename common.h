@@ -26,6 +26,8 @@
 #define ire(x, start, end) ((x) >= (start) && (x) <= (end))
 #define max(x,y) ((x) < (y) ? (y) : (x))
 #define min(x, y) ((x) < (y) ? (x) : (y))
+#define odd(x) ((x) & 1UL)
+#define even(x) (!odd((x)))
 /* Absolute value */
 #define abv(x) ((x) < 0 ? (x) * (-1) : (x))
 
