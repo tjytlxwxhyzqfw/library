@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "../../heap.h"
+#include "../../include/heap.h"
 
 struct heap *heap_alloc(int cap, int (*cmp)(const void *, const void*)
 	#ifdef DIJKSTRA

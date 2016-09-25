@@ -1,7 +1,7 @@
 /**
  * @author wcc
  */
-#include "../../trie.h"
+#include "../../include/trie.h"
 
 struct trie_node *trie_node_new(char key)
 {

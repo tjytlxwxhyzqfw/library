@@ -4,7 +4,7 @@
  * @author wcc
  */
 
-#include "../../segtree.h"
+#include "../../include/segtree.h"
 
 /* interface */
 

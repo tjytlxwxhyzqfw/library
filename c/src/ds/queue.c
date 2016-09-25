@@ -1,7 +1,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include "../../queue.h"
+#include "../../include/queue.h"
 
 struct queue *queue_alloc(int cap)
 {

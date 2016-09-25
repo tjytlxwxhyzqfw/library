@@ -5,7 +5,7 @@
  */
 
 #include <string.h>
-#include "../../numth.h"
+#include "../../include/numth.h"
 
 static long long numth_do_gcd(long long a, long long b);
 static void numth_do_gcd_e(long long grt, long long les, long long *d, long long *x, long long *y);

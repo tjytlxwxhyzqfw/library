@@ -10,6 +10,7 @@ workdir = "."
 rootdir = ""
 headerdir = ""
 sourcedir = ""
+lang = ""
 
 def fatal(error):
 	print "fatal: %s"%str(error)
@@ -17,14 +18,14 @@ def fatal(error):
 
 def initenv():
 	global rootdir, headerdir, sourcedir
-	rootdir = os.getenv("WCC_LIB_PATH")
+	rootdir = os.getenv("WCC_LIBRARY_PATH")
 	if not rootdir:
-		raise RuntimeError("intenv(): need 'WCC_LIB_PATH'")
+		raise RuntimeError("intenv(): need 'WCC_LIBRARY_PATH'")
 	if not os.path.exists(rootdir):
 		raise RuntimeError("intenv(): invalid 'rootdir': %s"%rootdir)
-	headerdir = rootdir
+	rootdir = os.path.join(rootdir, lang)
+	headerdir = os.path.join(rootdir, "include")
 	sourcedir = os.path.join(rootdir, "src")
-
 
 def header_full_path(name):
 	assert name.endswith(".h")
@@ -33,7 +34,7 @@ def header_full_path(name):
 	return path
 
 def source_full_path(name):
-	assert name.endswith(".c")
+	assert name.endswith(".c") or name.endswith(".cpp")
 	source_path = None
 	for root, dirs, files in os.walk(rootdir):
 		if re.search(r"/\.", root):
@@ -46,11 +47,13 @@ def source_full_path(name):
 if __name__ == "__main__":
 	print "Source Assembler"
 	try:
+		lang = sys.argv[1]
 		initenv()
 		print "headerdir: %s"%headerdir
 		print "sourcedir: %s"%sourcedir
 		print "workdir: %s"%workdir
-		work_path = os.path.join(workdir, sys.argv[1])
+		print "lang: %s"%lang
+		work_path = os.path.join(workdir, sys.argv[2])
 		print "work_path: %s"%work_path
 		work = Source(work_path)
 		work.erase_comment()
