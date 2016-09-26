@@ -7,7 +7,6 @@
 
 namespace number {
 	inline long long correct(long long value, long long mod);
-	inline long long sgn(long long x);
 
 	long long quickpow(long long x, long long n, long long mod);
 	long long gcd(long long a, long long b, long long &x, long long &y);

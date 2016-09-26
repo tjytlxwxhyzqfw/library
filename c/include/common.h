@@ -28,6 +28,7 @@
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #define odd(x) ((x) & 1UL)
 #define even(x) (!odd((x)))
+#define sgn(n) (odd((n)) ? (-1) : (1))
 /* Absolute value */
 #define abv(x) ((x) < 0 ? (x) * (-1) : (x))
 

@@ -69,11 +69,11 @@ if __name__ == "__main__":
 		except RuntimeError, e:
 			print "Warning: header: %s"%e
 		try:
-			source_path = source_full_path(h.replace(".h", ".c"))
+			source_path = source_full_path(h.replace(".h", "."+lang))
 			print "source: %s"%source_path
 			source = Source(source_path)
 			work.code.extend(source.erase_comment().erase_line(r"#include.*?%s"%h).code)
 		except RuntimeError, e:
 			print "Warning: source: %s"%e
-	work.write_to_file("0000.c")
-	print "0000.c generated"
+	work.write_to_file("0000.%s"%lang)
+	print "0000.%s generated"%lang

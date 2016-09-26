@@ -13,8 +13,8 @@ class Source(object):
 		self.path = ""
 		if not path or not os.path.exists(path):
 			raise RuntimeError("Source(): __init__(): invalid 'path': %s"%path)
-		if not path.endswith(".c") and not path.endswith(".h"):
-			raise RuntimeError("Source(): __init__(): need .c or .h file: %s"%path)
+		if not path.endswith(".c") and not path.endswith(".h") and not path.endswith(".cpp"):
+			raise RuntimeError("Source(): __init__(): need .c or .h or .cpp file: %s"%path)
 		self.path = path
 		self.code = self.__parse_code()
 		self.headers = self.__parse_headers()
