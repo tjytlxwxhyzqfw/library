@@ -1,14 +1,7 @@
 #ifndef _TJYTLXWXHYZQFW_COMMON_H
 #define _TJYTLXWXHYZQFW_COMMON_H
 
-#include <assert.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define offset(t,m) ((unsigned long)&(((t*)0)->m))
-#define container_of(a,t,m) ((t*)((unsigned long)a-offset(t,m)))
+#include <climits>
 
 /* TODO: remember: 1UL is 32-bit */
 #define ULL1 ((unsigned long long )1)
@@ -30,9 +23,18 @@
 /* Absolute value */
 #define abv(x) ((x) < 0 ? (x) * (-1) : (x))
 
+/* loops */
 #define forn(i, n) for ((i) = 0; (i) < (n); (i) += 1)
 #define fore(i, n) for ((i) = 0; (i) <= (n); (i) += 1)
 #define forr(i, s, e) for((i) = (s); (i) < (e); (i) += 1)
 #define forre(i, s, e) for((i) = (s); (i) <= (e); (i) += 1)
+
+/* tools*/
+#define tailer(i, j) ((i) == (j) ? "\n" : " ")
+#define printa(a, i, n) forn((i), (n)) cout << (a)[(i)] << tailer((i), (n-1))
+
+/* containers */
+#define vecsize(t) vector<t>::size_type
+#define veciter(t) vector<t>::iterator
 
 #endif
