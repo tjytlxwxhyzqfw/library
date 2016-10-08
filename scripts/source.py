@@ -65,6 +65,9 @@ class Source(object):
 		out.write(self.__str__())
 		out.close
 
+	def reset_headers(self):
+		self.headers = self.__parse_headers()
+
 	def __parse_code(self):
 		try:
 			source_file = open(self.path)

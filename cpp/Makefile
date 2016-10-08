@@ -4,15 +4,21 @@ SRC:=$(ROOT)/src
 LIB:=$(ROOT)/lib
 
 define compile
-	g++ -Wall -L$(LIB) -Wl,-rpath=$(LIB) -o $(LIB)/lib${1}.so -shared -fPIC $(SRC)/${2}/${1}.cpp
+	g++ -std=gnu++11 -Wall -L$(LIB) -Wl,-rpath=$(LIB) -o $(LIB)/lib${1}.so -shared -fPIC $(SRC)/${2}/${1}.cpp
 endef
 
-ALL:=$(LIB)/libnumber.so
+ALL:=$(LIB)/libnumber.so $(LIB)/libarraytree.so $(LIB)/libdebug.so
 
 all: $(ALL)
 
 $(LIB)/libnumber.so: $(ICL)/number.h $(SRC)/math/number.cpp
 	$(call compile,number,math)
+
+$(LIB)/libarraytree.so: $(ICL)/arraytree.h $(SRC)/utils/arraytree.cpp
+	$(call compile,arraytree,utils)
+
+$(LIB)/libdebug.so: $(ICL)/debug.h $(SRC)/utils/debug.cpp
+	$(call compile,debug,utils)
 
 clean:
 	rm lib/*
