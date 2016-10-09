@@ -4,10 +4,10 @@ SRC:=$(ROOT)/src
 LIB:=$(ROOT)/lib
 
 define compile
-	g++ -std=gnu++11 -Wall -L$(LIB) -Wl,-rpath=$(LIB) -o $(LIB)/lib${1}.so -shared -fPIC $(SRC)/${2}/${1}.cpp
+	g++ -Wall -L$(LIB) -Wl,-rpath=$(LIB) -o $(LIB)/lib${1}.so -shared -fPIC $(SRC)/${2}/${1}.cpp
 endef
 
-ALL:=$(LIB)/libnumber.so $(LIB)/libarraytree.so $(LIB)/libdebug.so
+ALL:=$(LIB)/libnumber.so $(LIB)/libarraytree.so $(LIB)/libdebug.so $(LIB)/libsegtree.so
 
 all: $(ALL)
 
@@ -19,6 +19,9 @@ $(LIB)/libarraytree.so: $(ICL)/arraytree.h $(SRC)/utils/arraytree.cpp
 
 $(LIB)/libdebug.so: $(ICL)/debug.h $(SRC)/utils/debug.cpp
 	$(call compile,debug,utils)
+
+$(LIB)/libsegtree.so: $(ICL)/segtree.h $(SRC)/ds/segtree.cpp
+	$(call compile,segtree,ds)
 
 clean:
 	rm lib/*
