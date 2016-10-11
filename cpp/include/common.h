@@ -28,6 +28,8 @@
 #define fore(_i, _n) for ((_i) = 0; (_i) <= (_n); (_i) += 1)
 #define forr(_i, _s, _e) for((_i) = (_s); (_i) < (_e); (_i) += 1)
 #define forre(_i, _s, _e) for((_i) = (_s); (_i) <= (_e); (_i) += 1)
+#define rfor(_i, _n) for((_i)=(_n)-1; ((_i) >= 0); (_i) -= 1)
+#define rfore(_i, _n) for((_i)=(_n); (_i) >= 0; (_i) -= 1)
 #define rforre(_i, _b, _e) for ((_i) = (_b); (_i) >= (_e); (_i) -= 1) 
 
 /* tools*/
