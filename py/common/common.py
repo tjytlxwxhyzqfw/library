@@ -8,3 +8,13 @@ def fwrite(string, path):
 	fil = open(path, "w")
 	fil.write(string)
 	fil.close()
+
+def judge(aout, bout, silence=False):
+	if not silence:
+		print aout
+		print bout
+	if aout == bout:
+		print "Ok"
+		return True
+	print "Wrong Answer"
+	return False 
