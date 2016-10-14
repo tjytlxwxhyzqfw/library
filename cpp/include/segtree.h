@@ -35,7 +35,7 @@ struct segtree_base {
 	inline int li(int i) const { return i << 1; }
 	inline int ri(int i) const { return (i << 1) | 1; }
 	inline int le(int i) const { return lb(i) ? 0 : prt(i) - (atl(i) ? 1 : 0); }
-	inline int re(int i) const { return rb(i) ? 0 : prt(i) - (atr(i) ? 1 : 0); }
+	inline int re(int i) const { return rb(i) ? 0 : prt(i) + (atr(i) ? 1 : 0); }
 	inline bool lb(int i) const { return (i & (i-1)) == 0; }
 	inline bool rb(int i) const { return (i & (i+1)) == 0; }
 	inline int valiad(int i) const {  return i != 0; }
