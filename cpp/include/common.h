@@ -35,12 +35,12 @@
 /* tools*/
 #define tailer(i, j) ((i) == (j) ? "\n" : " ")
 
-/* arrays */
-#define access(_a, _i, _n, _obv) (ir((_i), 0, (_n)) ? (_a)[(_i)] : (_obv)) 
-
 /* containers */
 #define vecsize(t) vector<t>::size_type
 #define veciter(t) vector<t>::iterator
 #define foriter(_i, _c) for((_i) = (_c).begin(); (_i) != (_c).end(); ++(_i))
+
+/* debug */
+#define blstr(b) (b ? "true" : "false")
 
 #endif
