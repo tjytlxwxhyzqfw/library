@@ -1,5 +1,5 @@
-#ifndef _TJYTLXWXHYZQFW_COMMON_H
-#define _TJYTLXWXHYZQFW_COMMON_H
+#ifndef __INCLUDE_COMMON_H
+#define __INCLUDE_COMMON_H
 
 #include <algorithm>
 #include <climits>

@@ -1,10 +1,12 @@
 /**
+ * Segment Tree
+ *
  * @author wcc
  *
  * 2016-10-09
  */
-#ifndef _TJYTLXWXHYZQFW_SEGTREE_H
-#define _TYYTLXWXHYZQFW_SEGTREE_H
+#ifndef __INCLUDE_SEGTREE_H
+#define __INCLUDE_SEGTREE_H
 
 #include <cassert>
 #include <cstdio>

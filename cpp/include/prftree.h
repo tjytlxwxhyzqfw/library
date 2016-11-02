@@ -1,10 +1,12 @@
 /**
+ * Prefix Tree (Trie)
+ *
  * @author wcc
  * 2016-10-14
  */
 
-#ifndef _TJYTLXWXHYZQFW_H
-#define _TJYTLXWHHYZQFW_H
+#ifndef __INCLUDE_PRFTREE_H
+#define __INCLUDE_PRFTREE_H
 
 #include <algorithm>
 #include <cstdio>

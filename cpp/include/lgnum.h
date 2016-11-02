@@ -1,13 +1,58 @@
 /**
+ * Large Number Operations
+ *
  * @author wcc
  * 2016-10-19
+ *
+ * A char array is employed to denote a large number,
+ * low numbers are on the LEFT(e.g. 123 is stored as 
+ * ['3', '2', '1']). Thus the unit digit is always at
+ * n[0]. Although this is kind of strange, it does 
+ * free us from some troubles of alignment.
+ *
+ * file overview :
+ *
+ * template <int width> struct lgnum {
+ *	static strpls()
+ *	static pls()
+ *
+ *	num, len
+ *
+ *	lgnum()
+ *	setv()
+ *
+ *	operator==()
+ *	operator<()
+ * 	operator>()
+ * 	operator>=()
+ *	operator<=()
+ *
+ *	print()
+ * }
+ *
  */
+
+#ifndef __INCLUDE_LGNUM_H
+#define __INCLUDE_LGNUM_H
+
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 template <int width> struct lgnum {
+	/**
+	 * large number addition based on char arrays
+	 *
+	 * It must be guaranteed that both x[] and y[] are not empty string,
+	 * namely :
+	 *	1. strlen(x) > 0
+	 *	2. strlen(y) > 0.
+	 *
+	 * @param x, y - operands
+	 * @param r - result of x + y.
+	 * @return - length of r[]
+	 */
 	static int strpls(const char *x, const char *y, char *r) {
 		int i, xlen, ylen;
 		int tres, carry;
@@ -38,17 +83,34 @@ template <int width> struct lgnum {
 		return i;
 	}
 
+	/**
+	 * large number addition based on 'lgnum'
+	 *
+	 * @param x, y - operands
+	 * @param r - result of x + y
+ 	 */
 	static void pls(const lgnum &x, const lgnum &y, lgnum &r) {
 		r.len = strpls(x.num, y.num, r.num);
 	}
 
-	char *num;
-	int len;
+	char *num; //number string
+	int len; // length of num[]
 
 	lgnum(void):num(NULL), len(0) {
 		num = new char[width+1];
 	}
 
+	//TODO: destructor
+
+	/**
+	 * set num[] with a number string
+	 *
+	 *      str      --->       num
+	 * ['1','2','3'] ---> ['3', '2', '1']
+	 *
+	 * @param str - number string of NORMAL order
+	 *	e.g. ['1', '2', '3'] for number 123
+	 */
 	void setv(const char *str) {
 		int i, m;
 		len = strlen(str);
@@ -59,7 +121,8 @@ template <int width> struct lgnum {
 	}
 
 	inline bool operator==(const lgnum &rival) const {
-		if (len != rival.len) return false;
+		if (len != rival.len)
+			return false;
 		return strcmp(num, rival.num) == 0;
 	}
 
@@ -67,8 +130,14 @@ template <int width> struct lgnum {
 		if (len == rival.len) {
 			char *s = num+len, *t = rival.num+len;
 			while (s > num && (*s == *t)) {
-				s--, t--;
+				s--;
+				t--;
 			};
+			/* One of following two conditions are satisfied here:
+			 * 1. s == num && t == rival.num
+			 * 2. *s != *t
+			 * We just compare *s and *t with both conditions.
+			 */
 			return *s < *t;
 		}
 		return len < rival.len;
@@ -95,3 +164,5 @@ template <int width> struct lgnum {
 		printf("\n");
 	}
 };
+
+#endif

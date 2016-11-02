@@ -7,16 +7,13 @@ define compile
 	g++ -Wall -L$(LIB) -Wl,-rpath=$(LIB) -o $(LIB)/lib${1}.so -shared -fPIC $(SRC)/${2}/${1}.cpp
 endef
 
-ALL:=$(LIB)/libnumber.so $(LIB)/libarraytree.so $(LIB)/libdebug.so $(LIB)/libsegtree.so $(LIB)/libprftree.so \
+ALL:=$(LIB)/libnumber.so $(LIB)/libdebug.so $(LIB)/libsegtree.so $(LIB)/libprftree.so \
 	$(LIB)/liblgnum.so
 
 all: $(ALL)
 
 $(LIB)/libnumber.so: $(ICL)/number.h $(SRC)/math/number.cpp
 	$(call compile,number,math)
-
-$(LIB)/libarraytree.so: $(ICL)/arraytree.h $(SRC)/utils/arraytree.cpp
-	$(call compile,arraytree,utils)
 
 $(LIB)/libdebug.so: $(ICL)/debug.h $(SRC)/utils/debug.cpp
 	$(call compile,debug,utils)
