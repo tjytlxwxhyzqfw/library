@@ -2,7 +2,31 @@
  * Prefix Tree (Trie)
  *
  * @author wcc
- * 2016-10-14
+ * created : 2016-10-14
+ * modified : 2016-11-03
+ *
+ * overview :
+ *
+ * struct prftree {
+ *	struct node {
+ *		cnt, *nexts
+ *
+ *		node()
+ *		init()
+ *		alloc_nexts() - allocate memory for *nexts
+ *		has_next() - their is a edge leading to a specified character
+ *		print()
+ *	}
+ *
+ *	bas, len, *root
+ *
+ *	init()
+ * 	spread() - spread a string in trie
+ *	add() - add a string (a copy of it) into trie
+ *	find()
+ *	clear()
+ *	print()
+ * }
  */
 
 #ifndef __INCLUDE_PRFTREE_H
@@ -58,7 +82,7 @@ struct prftree {
 	 * This is a key method.
 	 *
 	 * @param s
-	 * @param index - first character unmatched in s
+	 * @param index - index of the first character unmatched in s
 	 * @return - last node matching s
 	 *
 	 * s[i] guides curr, |\ -> || -> |\ || -> |\
@@ -82,6 +106,9 @@ struct prftree {
 		return curr;
 	}
 
+	/**
+	 * Add into trie some nodes representing string *s
+	 */ 
 	prftree& add(const char *s) {
 		int i, idx;
 		node *curr = spread(s, &i);

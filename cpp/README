@@ -1,0 +1,30 @@
+Overview
+
+|-- include
+|   |-- common.h ........ Handy Tools
+|   |-- debug.h	......... Debugging Tools
+|   |-- helpers.h ....... Some Useful Helpers
+|   |-- lgnum.h	......... Large Number Operations
+|   |-- number.h ........ Number Theory And Combinatorics Algorithms.
+|   |-- prftree.h ....... Prefix Tree (Trie)
+|   `-- segtree.h ....... Segment Tree
+|-- lib
+|   `-- *.so
+|-- Makefile
+|-- obsolete
+|   `-- (obsolete files)
+|-- README
+|-- src
+|   |-- ds
+|   |   `-- segtree.cpp
+|   |-- math
+|   |   |-- lgnum.cpp
+|   |   `-- number.cpp
+|   |-- string
+|   |   `-- prftree.cpp
+|   `-- utils
+|       |-- debug.cpp
+|	`-- helpers.cpp
+`-- test
+    |-- Makefile
+    `-- number.cpp

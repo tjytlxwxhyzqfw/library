@@ -9,8 +9,9 @@
 #define LL(x) ((long long)(x))
 
 /* Set x to X_MAX if x is negetive (which is caused by overflow) */
-#define IOF(p) ((p) = ((p) < 0 ? INT_MAX : (p)))
-#define LLOF(p) ((p) = ((p) < 0 ? LLONG_MAX :(p)))
+/* You may check and re-write your code if you have to deal with overflow */
+// #define IOF(p) ((p) = ((p) < 0 ? INT_MAX : (p)))
+// #define LLOF(p) ((p) = ((p) < 0 ? LLONG_MAX :(p)))
 
 /* Is x in range [start, end) */
 #define ir(x, start, end) ((x) >= (start) && (x) < (end))
@@ -42,5 +43,20 @@
 
 /* debug */
 #define blstr(b) (b ? "true" : "false")
+
+/* read/print */
+
+bool scanfnint(int *a, const int n) {
+	for (int i = 0; i < n; ++i)
+		if (scanf("%d", &a[i]) != 1)
+			return false;
+	return true;
+}
+
+void printnint(const int *a, const int n, const char *tag="") {
+	printf("%s", tag);
+	for (int i = 0; i < n; ++i)
+		printf("%5d%s", a[i], i == n-1 ? "\n" : " ");
+}
 
 #endif

@@ -8,7 +8,7 @@ define compile
 endef
 
 ALL:=$(LIB)/libnumber.so $(LIB)/libdebug.so $(LIB)/libsegtree.so $(LIB)/libprftree.so \
-	$(LIB)/liblgnum.so
+	$(LIB)/liblgnum.so $(LIB)/libhelpers.so
 
 all: $(ALL)
 
@@ -26,6 +26,9 @@ $(LIB)/libprftree.so: $(ICL)/prftree.h $(SRC)/string/prftree.cpp
 
 $(LIB)/liblgnum.so: $(ICL)/lgnum.h $(SRC)/math/lgnum.cpp
 	$(call compile,lgnum,math)
+
+$(LIB)/libhelpers.so: $(ICL)/helpers.h $(SRC)/utils/helpers.cpp
+	$(call compile,helpers,utils)
 
 clean:
 	rm lib/*
