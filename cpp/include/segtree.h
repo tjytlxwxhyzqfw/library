@@ -1,9 +1,25 @@
-/**
- * Segment Tree
+/** @file
  *
  * @author wcc
+ * @data 2016-10-09
+ * @version 0.7
  *
- * 2016-10-09
+ * @brief Segment Tree
+ *
+ * @warning
+ *
+ * This library is a little bit heary for I
+ * origanally designed it for all kinds of problems
+ * of segment tree and of course it is too complicated
+ * for me to do it well.
+ *
+ * Therefore this is a not-so-good library,
+ * and I am desiging new libraries for segment tree,
+ * before I have accomplished that, I will (have to) keep
+ * using this.
+ *
+ * You should use lightseg.h for single point updating
+ * segment tree for it's more simple and clear.
  */
 #ifndef __INCLUDE_SEGTREE_H
 #define __INCLUDE_SEGTREE_H
@@ -12,42 +28,107 @@
 #include <cstdio>
 #include <vector>
 
+/** @brief Base class of segment tree nodes
+ */
 struct segnode_base {
 	int b, e;
 
-	inline bool p(void) const { return b == e; }
-	inline bool eq(int bgn, int end) const { return b == bgn and e == end; }
-	inline bool ct(int bgn, int end) const { return b <= bgn and end <= e; }
-	inline void itv(int bgn, int end) { b = bgn, e = end; }
-	inline bool spl(int bgn, int end) const { return bgn <= (b+e)/2 and e > (b+e)/2; }
-	inline int len(void) const { return e - b + 1; }
+	inline bool p(void) const {
+		return b == e;
+	}
+
+	inline bool eq(int bgn, int end) const {
+		return b == bgn and e == end;
+	}
+
+	inline bool ct(int bgn, int end) const {
+		return b <= bgn and end <= e;
+	}
+
+	inline void itv(int bgn, int end) {
+		b = bgn;
+		e = end;
+	}
+
+	inline bool spl(int bgn, int end) const {
+		return bgn <= (b+e)/2 and e > (b+e)/2;
+	}
+
+	inline int len(void) const {
+		return e - b + 1;
+	}
 
 	void print(int idx) const {
 		printf("\t%2d: [%2d, %2d]\n", idx, b, e);
 	}
 };
 
-template<class segnode_t>
-struct segtree_base {
+/** @brief Base class of segment trees
+ */
+template<class segnode_t> struct segtree_base {
 	std::vector<segnode_t> seg;
 	segnode_t *arr;
 	int size, half;
 
-	inline int prt(int i) const { return i >> 1; }
-	inline int li(int i) const { return i << 1; }
-	inline int ri(int i) const { return (i << 1) | 1; }
-	inline int le(int i) const { return lb(i) ? 0 : prt(i) - (atl(i) ? 1 : 0); }
-	inline int re(int i) const { return rb(i) ? 0 : prt(i) + (atr(i) ? 1 : 0); }
-	inline bool lb(int i) const { return (i & (i-1)) == 0; }
-	inline bool rb(int i) const { return (i & (i+1)) == 0; }
-	inline int valiad(int i) const {  return i != 0; }
-	inline int lstprt(void) const { return half-1; }
-	inline bool atl(int i) const { return (i & 1) == 0; }
-	inline bool atr(int i) const { return (i & 1) == 1; }
-	inline bool itvld(int i, int b, int e) const { return (b <= e and seg[i].ct(b, e)); }
-	inline segnode_t& lc(int i) { return seg[li(i)]; }
-	inline segnode_t& rc(int i) { return seg[ri(i)]; }
-	inline segnode_t& get(int i) { return seg[i]; }
+	inline int prt(int i) const {
+		return i >> 1;
+	}
+
+	inline int li(int i) const {
+		return i << 1;
+	}
+
+	inline int ri(int i) const {
+		return (i << 1) | 1;
+	}
+
+	inline int le(int i) const {
+		return lb(i) ? 0 : prt(i) - (atl(i) ? 1 : 0);
+	}
+
+	inline int re(int i) const {
+		return rb(i) ? 0 : prt(i) + (atr(i) ? 1 : 0);
+	}
+
+	inline bool lb(int i) const {
+		return (i & (i-1)) == 0;
+	}
+
+	inline bool rb(int i) const {
+		return (i & (i+1)) == 0;
+	}
+
+	inline int valiad(int i) const {
+		return i != 0;
+	}
+
+	inline int lstprt(void) const {
+		return half-1;
+	}
+
+	inline bool atl(int i) const {
+		return (i & 1) == 0;
+	}
+
+	inline bool atr(int i) const {
+		return (i & 1) == 1;
+	}
+
+	inline bool itvld(int i, int b, int e) const {
+		return (b <= e and seg[i].ct(b, e));
+	}
+
+	inline segnode_t& lc(int i) {
+		return seg[li(i)];
+	}
+
+	inline segnode_t& rc(int i) {
+		return seg[ri(i)];
+	}
+
+	inline segnode_t& get(int i) {
+		return seg[i];
+	}
 
 	void init(int sz) {
 		assert(lb(sz));

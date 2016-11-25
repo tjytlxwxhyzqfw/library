@@ -1,28 +1,9 @@
-/**
- * Number Theory And Combinatorics Algorithms.
- *
+/** @file
  * @author wcc
- * 2016-10-26
+ * @date 2016-10-26
+ * @version 1.0
  *
- * file overview :
- *
- * gcd()
- * 
- * template struct moduler {
- *	static crc()
- *	static pls()
- *	static mul()
- *	static pow()
- *	static eqt()
- *
- *	num
- *
- *	correct()
- *	ll()
- *	operator=()
- *	operator+()
- *	operator*()
- * }
+ * @brief Number Theory And Combinatorics Algorithms.
  */
 
 #ifndef __INCLUDE_NUMBER_H
@@ -53,6 +34,8 @@ inline long long gcd(const long long a, const long long b) {
 	return gcd(a, b, &x, &y);
 }
 
+/** @brief Modulo Util
+ */
 template <long long mod> struct moduler {
 	/**
 	 * Correct a number x into [0, mod)
@@ -82,7 +65,7 @@ template <long long mod> struct moduler {
 	/**
 	 * @param x - base number
 	 * @param y - exponent
-	 * @return x^y % mod
+	 * @return x<sup>y</sup> % mod
 	 */
 	static long long pow(const long long x, const long long y) {
 		long long n = y;
@@ -100,36 +83,40 @@ template <long long mod> struct moduler {
 		return ans.ll();
 	}
 
-	/**
-	 * Moduler Linear Equation Solver
-	 * 	ax = b (% mod)
+	/** @brief Moduler Linear Equation Solver
+	 * 
+	 * ax = b (% mod)
 	 *
 	 * @param a
 	 * @param b
 	 * @param d - *d = gcd(a, mod)
 	 * @return any one of the solution(s), -1 if no solution.
 	 *
-	 * Deduction:
+	 * @par Deduction
+	 *
 	 * Use n instead of mod
  	 * By applying gcd() on (a, n) we get:
-	 * 	ax + ny = d
+	 * >	ax + ny = d
 	 * Since d is divisible by b:
-	 * 	ax + ny = d = b/m
-	 * 	m = b / d 
+	 * >	ax + ny = d = b/m
+	 * >	m = b / d 
 	 * Thus:
-	 * 	amx + nmy = b
+	 * >	amx + nmy = b
 	 * Yet we get an solution:
-	 * 	x0 = xb/d
+	 * >	x<sub>0</sub> = xb/d
 	 * Furthermore:
-	 * 	xi = x0+i(n/d) (mod n), i = 0, 1, ..., d-1
+	 * >	x<sub>i</sub> = x<sub>0</sub>+i(n/d) (mod n), i = 0, 1, ..., d-1
 	 *
-	 * Use following loop to for accessing all solutions:
+	 * @par Usage
 	 *
+	 * Use following loop to for accessing all solutions
+	 * @code
 	 * assert(x0 != -1);
 	 * forn(i, d) {
-	 * 	x = moduler<mod>::pls(x0+i*(n/d));
-	 * 	...
-	 * }
+	 *	x = moduler<mod>::pls(x0+i*(n/d));
+	 *	//...
+	 *}
+	 *@endcode
 	 */
 	inline static long long eqt(const long long a, const long long b, long long *d) {
 		long long x, y;

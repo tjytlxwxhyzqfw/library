@@ -1,21 +1,24 @@
-/** Some Useful Helpers
+/** @file
  *
  * @author wcc
- * create : 2016-11-03
- * modified: 2016-11-03
+ * @date 2016-11-03
+ * @version 0.1
  *
- * overview :
+ * @brief Some Useful Helpers
  *
- * template struct skipper {
- * 	bgn, end, cur, next
- *	st
  *
- *	init() - set a range and point current pointer to the first target
- *	check_from() - move current pointer to the next target, stats from arbitrary pointer
- *	nxt() - move current pointer to the next target, starts from current pointer
- *	mov() - move current pointer to the next target, starts from next pointer
- *	idx() - offset of current pointer
- * }
+ * Overview :
+ *
+ * 	template struct skipper {
+ * 		bgn, end, cur, next
+ *		st
+ *
+ *		init() - 
+ *		check_from() - 
+ *		nxt() - 
+ *		mov() - 
+ *		idx() - 
+ * 	}
  */
 
 #ifndef __INCLUDE_HELPER_H
@@ -24,11 +27,14 @@
 #include <algorithm>
 #include <cstdio>
 
-/** Next element statifying the given condition.
+/** @brief Next element statifying the given condition.
  *
- * Example:
- *	//copy positive integers from vector<int> a to b
+ * @par Example
  *
+ * This example shows how to copy positive integers from vector<int> a to b
+ * with skipper
+ *
+ * @code
  *	//We need a unary_function first.
  *	class pos: public unary_function<vector<int>::iterator, bool> {
  *		bool operator()(vector<int>::iterator it) {
@@ -43,24 +49,32 @@
  *		b.push_back(*skp.cur);
  *		skp.mov();
  *	}
+ * @endcode
  *
- *	//or:
+ * Or you could use 'for' loop instead of 'while':
+ *
+ * @code
  *	for (skp.init(a.begin(). a.end()); skp.nxt(); skp.mov())
  *		b.push_ack(*skp.cur)
+ * @endcode
  *
  *
- * @see cf-r375-c
+ * @see Codeforces Round #375 C
  */
 template <class Iterator, class Function> struct skipper {
 	Iterator bgn, end, cur, next;
 	Function st;
 
+	/** @brief Bind skpper to a range and point current pointer to the first target in this range
+	 */
 	inline void init(const Iterator b, const Iterator e) { 
 		bgn = b;
 		end = e;
 		check_from(bgn);
 	}
 
+	/** @brief Move current pointer to the next target, stats from arbitrary pointer
+	 */
 	bool check_from(Iterator from) {
 		for (next = from; next != end; ++next) {
 			if (st(next))
@@ -69,15 +83,20 @@ template <class Iterator, class Function> struct skipper {
 		cur = next++;
 		return cur != end;
 	}
-
+	/** @brief Move current pointer to the next target, starts from current pointer
+	 */
 	inline bool nxt(void) {
 		return check_from(cur);
 	}
 
+	/** @brief Move current pointer to the next target, starts from next pointer
+	 */
 	inline bool mov(void) {
 		return check_from(next);
 	}
 
+	/** @brief Offset of current pointer
+	 */
 	inline int idx(void) const {
 		return static_cast<int>(cur - bgn);
 	}

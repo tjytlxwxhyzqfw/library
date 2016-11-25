@@ -1,35 +1,16 @@
-/**
- * Large Number Operations
+/** @file
  *
  * @author wcc
- * 2016-10-19
+ * @date 2016-10-19
+ * @version 0.5
+ *
+ * @brief Large Number Operations
  *
  * A char array is employed to denote a large number,
  * low numbers are on the LEFT(e.g. 123 is stored as 
  * ['3', '2', '1']). Thus the unit digit is always at
  * n[0]. Although this is kind of strange, it does 
  * free us from some troubles of alignment.
- *
- * file overview :
- *
- * template <int width> struct lgnum {
- *	static strpls()
- *	static pls()
- *
- *	num, len
- *
- *	lgnum()
- *	setv()
- *
- *	operator==()
- *	operator<()
- * 	operator>()
- * 	operator>=()
- *	operator<=()
- *
- *	print()
- * }
- *
  */
 
 #ifndef __INCLUDE_LGNUM_H
@@ -40,18 +21,19 @@
 #include <cstdlib>
 #include <cstring>
 
+/** @brief Large Number
+ */
 template <int width> struct lgnum {
-	/**
-	 * large number addition based on char arrays
+	/** @brief Large number addition based on char arrays
 	 *
 	 * It must be guaranteed that both x[] and y[] are not empty string,
 	 * namely :
 	 *	1. strlen(x) > 0
 	 *	2. strlen(y) > 0.
 	 *
-	 * @param x, y - operands
-	 * @param r - result of x + y.
-	 * @return - length of r[]
+	 * @param x, y - Operands
+	 * @param r - Result of x + y.
+	 * @return Length of r[]
 	 */
 	static int strpls(const char *x, const char *y, char *r) {
 		int i, xlen, ylen;
@@ -83,11 +65,10 @@ template <int width> struct lgnum {
 		return i;
 	}
 
-	/**
-	 * large number addition based on 'lgnum'
+	/** @brief Large number addition based on lgnum
 	 *
-	 * @param x, y - operands
-	 * @param r - result of x + y
+	 * @param x, y - Operands
+	 * @param r - Result of x + y
  	 */
 	static void pls(const lgnum &x, const lgnum &y, lgnum &r) {
 		r.len = strpls(x.num, y.num, r.num);
@@ -102,11 +83,12 @@ template <int width> struct lgnum {
 
 	//TODO: destructor
 
-	/**
-	 * set num[] with a number string
+	/** @brief Set num[] with a number string
 	 *
+	 * <pre>
 	 *      str      --->       num
 	 * ['1','2','3'] ---> ['3', '2', '1']
+	 *</pre>
 	 *
 	 * @param str - number string of NORMAL order
 	 *	e.g. ['1', '2', '3'] for number 123

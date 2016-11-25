@@ -7,7 +7,7 @@ define compile
 	g++ -Wall -L$(LIB) -Wl,-rpath=$(LIB) -o $(LIB)/lib${1}.so -shared -fPIC $(SRC)/${2}/${1}.cpp
 endef
 
-ALL:=$(LIB)/libnumber.so $(LIB)/libdebug.so $(LIB)/libsegtree.so $(LIB)/libprftree.so \
+ALL:=$(LIB)/libnumber.so $(LIB)/libdebug.so $(LIB)/libsegtree.so $(LIB)/liblightseg.so $(LIB)/libprftree.so \
 	$(LIB)/liblgnum.so $(LIB)/libhelpers.so
 
 all: $(ALL)
@@ -20,6 +20,9 @@ $(LIB)/libdebug.so: $(ICL)/debug.h $(SRC)/utils/debug.cpp
 
 $(LIB)/libsegtree.so: $(ICL)/segtree.h $(SRC)/ds/segtree.cpp
 	$(call compile,segtree,ds)
+
+$(LIB)/liblightseg.so: $(ICL)/lightseg.h $(SRC)/ds/lightseg.cpp
+	$(call compile,lightseg,ds)
 
 $(LIB)/libprftree.so: $(ICL)/prftree.h $(SRC)/string/prftree.cpp
 	$(call compile,prftree,string)

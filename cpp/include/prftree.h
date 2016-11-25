@@ -1,100 +1,102 @@
-/**
- * Prefix Tree (Trie)
+/** @file
+ *
+ * @brief Prefix Tree (Trie)
+ * 
+ * A prefix tree using ascii indices
  *
  * @author wcc
- * created : 2016-10-14
- * modified : 2016-11-03
- *
- * overview :
- *
- * struct prftree {
- *	struct node {
- *		cnt, *nexts
- *
- *		node()
- *		init()
- *		alloc_nexts() - allocate memory for *nexts
- *		has_next() - their is a edge leading to a specified character
- *		print()
- *	}
- *
- *	bas, len, *root
- *
- *	init()
- * 	spread() - spread a string in trie
- *	add() - add a string (a copy of it) into trie
- *	find()
- *	clear()
- *	print()
- * }
+ * @date 2016-10-14
+ * @version 0.7
  */
 
 #ifndef __INCLUDE_PRFTREE_H
 #define __INCLUDE_PRFTREE_H
 
 #include <algorithm>
+#include <cassert>
 #include <cstdio>
 #include <cstring>
 
-struct prftree {
-	struct node {
+/** @brief Prefix tree
+ */
+struct Prftree {
+	/** @brief Prefix tree node
+	 */
+	struct Node {
 		int cnt;
-		node *nexts;
+		Node *nexts;
 
-		node(): cnt(-1), nexts(NULL) {}
-
-		inline node& init(void) {
+		Node(void) {
 			cnt = 0;
-			return *this;
+			nexts = NULL;
 		}
 
-		inline node& alloc_nexts(const int len) {
-			nexts = new node[len];
-			return *this;
+		~Node(void) {
+			if (nexts)
+				delete nexts;
+		}
+
+		inline void alloc_nexts(const int len) {
+			assert(nexts == NULL);
+			nexts = new Node[len];
 		}
 
 		inline bool has_next(int i) const {
+			//TODO: why use '>=' ?
 			return nexts != NULL && nexts[i].cnt >= 0;
 		}
 		
 
 		void print(int cidx, int bas) const {
-			printf("%c(cnt: %2d)\n", cidx+bas, cnt);
-		}
-
-		void print(int cidx) const {
-			printf("%3d(cnt: %2d)\n", cidx, cnt);
+			printf("%c(%3d): %2d)\n", cidx+bas, cidx+bas, cnt);
 		}
 	};
 
 	int bas, len;
-	node *root;
+	Node *root;
 
-	inline prftree& init(const int base, const int length) {
-		bas = base;
-		len = length;
-		root = new node();
-		return *this;
+	Prftree(void) {
+		bas = len = 0;
+		root = NULL;
 	}
 
-	/**
-	 * Match s in trie as long as we can.
-	 * This is a key method.
+	~Prftree(void) {
+		if (root)
+			delete root;
+	}
+
+	/** @brief Initialize a prefix tree
 	 *
-	 * @param s
-	 * @param index - index of the first character unmatched in s
-	 * @return - last node matching s
-	 *
-	 * s[i] guides curr, |\ -> || -> |\ || -> |\
-	 * Go on if curr can follow s[i], else break
+	 * @param base - Sequence offset in ascii table
+	 * @param length - Length of sequence
 	 */
-	node* spread(const char *s, int *index) const {
-		node *curr = root;
+	inline void build(const int base, const int length) {
+		bas = base;
+		len = length;
+		root = new Node();
+	}
+
+	/** @brief Spread a string in prefix tree
+	 *
+	 * Find the longgest prefix in of s in tree.
+	 *
+	 * @param s - string to be spreaded
+	 * @param index - index of the first character without
+	 *	a corresponding node in prefix tree.
+	 * @return The last node in the prefix path
+	 *
+	 * @par Implementation Details
+	 * <pre>
+	 * s[i] guides curr, like this:
+	 * |\ -> || -> |\ || -> |\
+	 * Go on if curr can follow s[i], else break.
+	 * </pre>
+	 */
+	Node* spread(const char *s, int *index) const {
+		Node *curr = root;
 		int i, idx;
 
-		/**
-		 * [0, i) has been matched in trie
-		 */
+		/* [0, i) has been matched in trie */
 		for (i = 0; s[i] != 0; ++i) {
 			idx = s[i] - bas;
 			if (!curr->has_next(idx))
@@ -106,49 +108,80 @@ struct prftree {
 		return curr;
 	}
 
-	/**
-	 * Add into trie some nodes representing string *s
+	/** @brief Add a string to prefix tree
+	 *
+	 * This function add into trie some nodes representing string *s,
+	 * only the 'cnt' of the last node are increased.
+	 *
+	 * Note that this is a very simple adding procedure,
+	 * for it dose a very simple thing and in most cases,
+	 * you might have to write your own adding function
+	 * <strong>outside</strong> the tree.
+	 *
+	 * @param s - target string
 	 */ 
-	prftree& add(const char *s) {
+	void add(const char *s) {
 		int i, idx;
-		node *curr = spread(s, &i);
+		Node *curr = spread(s, &i);
 		for (; s[i] != 0; ++i) {
 			idx = s[i] - bas;
 			if (curr->nexts == NULL)
 				curr->alloc_nexts(len);
-			curr->nexts[idx].init();
 			curr = &curr->nexts[idx];
 		}
 		++curr->cnt;
-		return *this;
 	}
 
-	inline node* find(const char *s) const {
+	/** @brief Find given string in prefix string
+ 	 *
+	 * @param s - target string
+	 * @return - tail node of s in tree, NULL if no such node.
+	 */
+	inline Node* find(const char *s) const {
 		int idx;
-		node *curr = spread(s, &idx);
+		Node *curr = spread(s, &idx);
 		if (s[idx] == 0 && curr->cnt > 0)
 			return curr;
 		return NULL;
 	}
 
-	void clear(void) {
+	/** @brief Clear prefix tree
+	 *
+	 * Driver of recursive function clear(Node*).
+	 */
+	inline void clear(void) {
 		clear(root);
 	}
 
-	void clear(node *rt) {
-		int i;
+	/** @brief Clear prefix tree recursivly
+	 *
+	 * @param rt - Root of a subtree
+	 */
+	void clear(Node *rt) {
 		if (rt->nexts == NULL)
 			return;
-		forr(i, bas, len) clear(&root->nexts[i]);
+		for (int i = 0; i < len; ++i)
+			clear(&root->nexts[i]);
 		delete rt->nexts;
 		rt->nexts = NULL;
 	}
 
+	/** @brief Print prefix tree
+	 *
+	 * Driver of recursive function print(const int, const Node*, const int)
+	 */
 	inline void print(void) {
 		print(0, root, 0);
 	}
 
-	void print(const int idx, const node *rt, const int deepth) const {
+	/**
+	 * @brief Print prefix tree recursivly
+	 *
+	 * @param idx - Index of current node
+	 * @param rt - Root of subtree
+	 * @param deepth - Resursion deepth, used for indent
+	 */
+	void print(const int idx, const Node *rt, const int deepth) const {
 		for (int i = 0; i < deepth; ++i)
 			printf("\t");
 		rt->print(idx, bas);

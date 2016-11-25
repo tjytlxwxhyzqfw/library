@@ -1,10 +1,20 @@
+/** @file
+ *
+ * @author wcc
+ * @date 2016-6
+ * @version 1.0
+ *
+ * @brief Frequently Used Macros and Functions
+ */
+
 #ifndef __INCLUDE_COMMON_H
 #define __INCLUDE_COMMON_H
 
 #include <algorithm>
 #include <climits>
+#include <cstdarg>
 
-/* TODO: remember: 1UL is 32-bit */
+/* 1UL is 32-bit */
 #define ULL1 ((unsigned long long )1)
 #define LL(x) ((long long)(x))
 
@@ -33,30 +43,65 @@
 #define rfore(_i, _n) for((_i)=(_n); (_i) >= 0; (_i) -= 1)
 #define rforre(_i, _b, _e) for ((_i) = (_b); (_i) >= (_e); (_i) -= 1) 
 
-/* tools*/
-#define tailer(i, j) ((i) == (j) ? "\n" : " ")
-
 /* containers */
-#define vecsize(t) vector<t>::size_type
-#define veciter(t) vector<t>::iterator
 #define foriter(_i, _c) for((_i) = (_c).begin(); (_i) != (_c).end(); ++(_i))
 
 /* debug */
 #define blstr(b) (b ? "true" : "false")
 
-/* read/print */
+/* printing tools */
 
-bool scanfnint(int *a, const int n) {
-	for (int i = 0; i < n; ++i)
-		if (scanf("%d", &a[i]) != 1)
-			return false;
-	return true;
+#define tailer(i, j) ((i) == (j) ? "\n" : " ")
+
+/** @brief Print with indent */
+void printi(int ind, const char *format, ...) {
+	va_list args;
+
+	for (int i = 0; i < ind; ++i)
+		putchar('\t');
+	va_start(args, format);
+	vprintf(format, args);
+	va_end(args);
 }
 
-void printnint(const int *a, const int n, const char *tag="") {
-	printf("%s", tag);
-	for (int i = 0; i < n; ++i)
-		printf("%5d%s", a[i], i == n-1 ? "\n" : " ");
+/** @brief Print dazzlingly */
+void printdzl(const char *format, ...) {
+	va_list args;
+	printf("--------------------------------> ");
+	va_start(args, format);
+	vprintf(format, args);
+	va_end(args);
+}
+
+/** @brief Print tags, titles or cutlines */
+void printt(const char *s, int type=1) {
+	const char *raw = "%s";
+	const char *title = "%s\n";
+	const char *cutline = "--- %s --->\n";
+	const char *longcut = "------ %s ------>\n";
+	const char *llcut = "------------ %s ------------>\n";
+	const char *types[] = {raw, title, cutline, longcut, llcut};
+	assert(ir(type, 0, 5));
+	printf(types[type], s);
+}
+
+/** @breif Print sequences
+ */
+template <class Iterator> void printa(const Iterator bgn, const Iterator end, const char *tag="", const int tagtype=0) {
+	static const char *fmts[] = {"%c ", "%3d ", "%5lld "};
+	const char *fmt = fmts[sizeof(*bgn)/4];
+	printt(tag, tagtype);
+	for (Iterator it = bgn; it != end; ++it)
+		printf(fmt, *it);
+	printf("\n");
+}
+
+/** @breif Print sequences who's elements own a 'print(void)' method
+ */
+template <class Iterator> void printb(const Iterator bgn, const Iterator end, const char *tag="", const int tagtype=0) {
+	printt(tag, tagtype);
+	for (Iterator it = bgn; it != end; ++it)
+		it->print();
 }
 
 #endif
