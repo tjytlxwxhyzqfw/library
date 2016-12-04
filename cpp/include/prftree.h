@@ -6,7 +6,6 @@
  *
  * @author wcc
  * @date 2016-10-14
- * @version 0.7
  */
 
 #ifndef __INCLUDE_PRFTREE_H
@@ -32,8 +31,9 @@ struct Prftree {
 		}
 
 		~Node(void) {
-			if (nexts)
-				delete nexts;
+			if (nexts) {
+				delete[] nexts;
+			}
 		}
 
 		inline void alloc_nexts(const int len) {
@@ -61,8 +61,10 @@ struct Prftree {
 	}
 
 	~Prftree(void) {
-		if (root)
+		if (root) {
+			clear();
 			delete root;
+		}
 	}
 
 	/** @brief Initialize a prefix tree
@@ -73,6 +75,7 @@ struct Prftree {
 	inline void build(const int base, const int length) {
 		bas = base;
 		len = length;
+		assert(root == NULL);
 		root = new Node();
 	}
 
@@ -161,8 +164,8 @@ struct Prftree {
 		if (rt->nexts == NULL)
 			return;
 		for (int i = 0; i < len; ++i)
-			clear(&root->nexts[i]);
-		delete rt->nexts;
+			clear(&rt->nexts[i]);
+		delete[] rt->nexts;
 		rt->nexts = NULL;
 	}
 

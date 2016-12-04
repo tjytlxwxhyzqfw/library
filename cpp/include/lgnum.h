@@ -23,7 +23,7 @@
 
 /** @brief Large Number
  */
-template <int width> struct lgnum {
+template <int width> struct Lgnum {
 	/** @brief Large number addition based on char arrays
 	 *
 	 * It must be guaranteed that both x[] and y[] are not empty string,
@@ -65,23 +65,28 @@ template <int width> struct lgnum {
 		return i;
 	}
 
-	/** @brief Large number addition based on lgnum
+	/** @brief Large number addition based on Lgnum
 	 *
 	 * @param x, y - Operands
 	 * @param r - Result of x + y
  	 */
-	static void pls(const lgnum &x, const lgnum &y, lgnum &r) {
+	static void pls(const Lgnum &x, const Lgnum &y, Lgnum &r) {
 		r.len = strpls(x.num, y.num, r.num);
 	}
 
 	char *num; //number string
 	int len; // length of num[]
 
-	lgnum(void):num(NULL), len(0) {
+	Lgnum(void): len(0) {
 		num = new char[width+1];
 	}
 
-	//TODO: destructor
+	//TODO: test
+	~Lgnum(void) {
+		/* num is valiad all the time*/
+		assert(num);
+		delete[] num;
+	}
 
 	/** @brief Set num[] with a number string
 	 *
@@ -102,13 +107,13 @@ template <int width> struct lgnum {
 			std::swap(num[i], num[len-1-i]);
 	}
 
-	inline bool operator==(const lgnum &rival) const {
+	inline bool operator==(const Lgnum &rival) const {
 		if (len != rival.len)
 			return false;
 		return strcmp(num, rival.num) == 0;
 	}
 
-	bool operator <(const lgnum &rival) const {
+	bool operator <(const Lgnum &rival) const {
 		if (len == rival.len) {
 			char *s = num+len, *t = rival.num+len;
 			while (s > num && (*s == *t)) {
@@ -125,15 +130,15 @@ template <int width> struct lgnum {
 		return len < rival.len;
 	}
 
-	inline bool operator>(const lgnum &rival) const {
+	inline bool operator>(const Lgnum &rival) const {
 		return rival < *this;
 	}
 
-	inline bool operator>=(const lgnum &rival) const {
+	inline bool operator>=(const Lgnum &rival) const {
 		return !(*this < rival);
 	}
 
-	inline bool operator<=(const lgnum &rival) const {
+	inline bool operator<=(const Lgnum &rival) const {
 		return !(*this > rival);
 	}
 

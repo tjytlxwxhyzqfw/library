@@ -1,7 +1,8 @@
 /** @file
+ *
  * @author wcc
  * @date 2016-10-26
- * @version 1.0
+ * @version 1.01
  *
  * @brief Number Theory And Combinatorics Algorithms.
  */
@@ -13,6 +14,13 @@
 
 static long long do_gcd(const long long, const long long, long long *, long long *);
 
+/** @brief Extended greast common divisor algorithm
+ *
+ * @param left, rght - operands
+ * @param x, y - output parameters storing coefficients used in egcd algorithm
+ * @return greast common divisor of <strong>absolute</strong> values of 'left' and 'rght',
+ *	return 0 if 'left' = 'rght' = 0.
+ */
 inline long long gcd(const long long left, const long long rght, long long *x, long long *y) {
 	long long a = left, b = rght;
 	if (a < 0)
@@ -34,6 +42,22 @@ inline long long gcd(const long long a, const long long b) {
 	return gcd(a, b, &x, &y);
 }
 
+/** @brief Simple primality test
+ * @param n
+ * @return 'true' if n is prime else 'false'
+ */
+bool isprime(const long long n) {
+	assert(n >= 0);
+	if (n == 1 || n == 0) return false;
+	if (n == 2) return true;
+
+	/* Note that we used '<=', must not use '<' */ 
+	for (long long i = 2; i * i <= n; ++i)
+		if (n % i == 0)
+			return false;
+	return true;
+}
+
 /** @brief Modulo Util
  */
 template <long long mod> struct moduler {
@@ -46,23 +70,24 @@ template <long long mod> struct moduler {
 		return ((-1*x/mod+1)*mod+x) % mod;
 	}
 
-	/**
-	 * @param x, y - NON-NEGETIVE number
-	 * @return
+	/** @brief Modulo addition
+	 *
+	 * Note that opreands must be <strong>non-negative</strong> number
 	 */
 	inline static long long pls(const long long x, const long long y) {
 		return ((x%mod)+(y%mod))%mod;
 	}
 
-	/**
-	 * @param x, y - NON-NEGETIVE number
-	 * @return
+	/** @brief Modulo X
+	 *
+	 * Note that oprands must be <stong>non-negative</strong> number
 	 */
 	inline static long long mul(const long long x, const long long y) {
 		return ((x%mod)*(y%mod))%mod;
 	}
 
-	/**
+	/** @brief Modulo quick power algorithm
+	 *
 	 * @param x - base number
 	 * @param y - exponent
 	 * @return x<sup>y</sup> % mod
@@ -85,7 +110,11 @@ template <long long mod> struct moduler {
 
 	/** @brief Moduler Linear Equation Solver
 	 * 
-	 * ax = b (% mod)
+	 * ax = b (mod n)
+	 *
+	 * Let d = gcd(a, n).
+	 * If d is divisible by b, we got d solutions.
+	 * Otherwise, no solution.
 	 *
 	 * @param a
 	 * @param b
@@ -94,10 +123,9 @@ template <long long mod> struct moduler {
 	 *
 	 * @par Deduction
 	 *
-	 * Use n instead of mod
  	 * By applying gcd() on (a, n) we get:
 	 * >	ax + ny = d
-	 * Since d is divisible by b:
+	 * Since d | b:
 	 * >	ax + ny = d = b/m
 	 * >	m = b / d 
 	 * Thus:
@@ -111,6 +139,7 @@ template <long long mod> struct moduler {
 	 *
 	 * Use following loop to for accessing all solutions
 	 * @code
+	 * x0 = moduler<mod>::eqt(a, b, &d);
 	 * assert(x0 != -1);
 	 * forn(i, d) {
 	 *	x = moduler<mod>::pls(x0+i*(n/d));
@@ -171,7 +200,7 @@ template <long long mod> struct moduler {
 	}
 };
 
-/* implementation */
+/* implementations */
 
 static inline long long do_gcd(const long long a, const long long b, long long *x, long long *y) {
 	if (b == 0) {

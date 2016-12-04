@@ -127,9 +127,11 @@ template <class Node> struct Segtree {
 	Node *seg, *arr;
 	int cap, round;
 
-	Segtree(void) {
-		seg = arr = NULL;
-		cap = round = 0;
+	Segtree(void):
+		seg(NULL),
+		arr(NULL),
+		cap(0),
+		round(0) {
 	}
 
 	/* kind of subtle */
