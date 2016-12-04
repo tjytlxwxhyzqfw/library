@@ -1,5 +1,5 @@
 obsolete
-lib/*
+lib
 *.pyc
 
 # why do i need this ?
