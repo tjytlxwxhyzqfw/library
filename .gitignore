@@ -2,3 +2,6 @@ obsolete
 lib
 *.pyc
 
+# why do i need this ?
+scripts/*.pyc 
+
